@@ -1,0 +1,35 @@
+# Ignore files: keep private data, drafts and build scripts out of git
+# AND out of what Vercel uploads.
+
+# ---- customer data: must never enter git history -------------------
+*.xlsx
+*.xls
+*.xlsm
+*Booking_System*
+content-plan.json
+
+# ---- build / tooling scripts ---------------------------------------
+*.py
+*.ps1
+gen_*.py
+
+# ---- article working drafts (published as .html, never ship raw) ---
+Aghbala.txt
+Amoger.txt
+Er-Rich (Rich).txt
+Lake Isli.txt
+Lake Tislit.txt
+Midelt.txt
+
+# ---- local env / secrets -------------------------------------------
+.env
+.env.*
+*.pem
+
+# ---- OS and editor noise -------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+# ---- customer booking cards (contain names, email, phone, travel dates) ---
+booking-card*.html
+*ABR-*.html

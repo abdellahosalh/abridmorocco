@@ -1,0 +1,64 @@
+# robots.txt for Abrid Morocco
+User-agent: *
+Allow: /
+
+Disallow: /article-template.html
+Disallow: /trip-template.html
+Disallow: /agent-tools.html
+Disallow: /sitemap.html
+Disallow: /admin/
+
+# --------------------------------------------------
+# AI search and answer engines
+# Explicitly welcomed. The wildcard rule above already
+# permits these, but naming them is what AI crawlers
+# look for when deciding how much to trust a site.
+# --------------------------------------------------
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+Sitemap: https://www.abridmorocco.com/sitemap.xml
+Sitemap: https://www.abridmorocco.com/image-sitemap.xml
+Sitemap: https://www.abridmorocco.com/llms.txt

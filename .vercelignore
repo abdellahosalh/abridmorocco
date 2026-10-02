@@ -1,0 +1,32 @@
+# Vercel upload rules.
+#
+# .gitignore protects git history; this protects the deployed artifact.
+# Both are needed: a file can be tracked in git and still be uploaded.
+
+# ---- customer data: must never be publicly downloadable ------------
+*.xlsx
+*.xls
+*.xlsm
+*Booking_System*
+content-plan.json
+
+# ---- build / tooling scripts ---------------------------------------
+*.py
+*.ps1
+gen_*.py
+
+# ---- article working drafts ----------------------------------------
+Aghbala.txt
+Amoger.txt
+Er-Rich (Rich).txt
+Lake Isli.txt
+Lake Tislit.txt
+Midelt.txt
+
+# ---- local env / secrets -------------------------------------------
+.env
+.env.*
+*.pem
+# ---- customer booking cards (contain names, email, phone, travel dates) ---
+booking-card*.html
+*ABR-*.html
