@@ -3,6 +3,7 @@
 <head>
 <script>try{if(localStorage.getItem('abrid-consent')==='declined'){window['ga-disable-G-C868HF02SM']=true;}}catch(e){}</script>
 <!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C868HF02SM"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -12,7 +13,7 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lac Tislit, Maroc : un lac du Haut Atlas près d&rsquo;Imilchil</title>
+  <title>Lac Tislit : un lac du Haut Atlas près d&rsquo;Imilchil</title>
 
   <link rel="canonical" href="https://www.abridmorocco.com/fr/blog-lake-tislit.html" />
   <link rel="alternate" hreflang="en" href="https://www.abridmorocco.com/blog-lake-tislit.html" />
@@ -423,7 +424,7 @@
     if (!choice) setTimeout(function () { bar.removeAttribute('hidden'); }, 15000);
     document.getElementById('cookieAccept').addEventListener('click', function () {
       try { localStorage.setItem(KEY, 'accepted'); } catch (e) {}
-      try { if (typeof gtag !== 'undefined') { gtag('event', 'consent_accepted'); } } catch (e) {}
+      try { if (typeof gtag !== 'undefined') { gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' }); } } catch (e) {} try { if (typeof gtag !== 'undefined') { gtag('event', 'consent_accepted'); } } catch (e) {}
       hide();
     });
     document.getElementById('cookieDecline').addEventListener('click', function () {

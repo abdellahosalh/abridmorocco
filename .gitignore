@@ -33,3 +33,8 @@ Thumbs.db
 # ---- customer booking cards (contain names, email, phone, travel dates) ---
 booking-card*.html
 *ABR-*.html
+
+# ---- internal research / notes: never publish ----
+RESEARCH-*.md
+README.md
+translate-all.js

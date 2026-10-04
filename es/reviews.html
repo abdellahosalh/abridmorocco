@@ -8,6 +8,7 @@
 
 <!-- Google tag (gtag.js) -->
 
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C868HF02SM"></script>
 
 <script>
@@ -755,7 +756,7 @@
 
       try { localStorage.setItem(KEY, 'accepted'); } catch (e) {}
 
-      try { if (typeof gtag !== 'undefined') { gtag('event', 'consent_accepted'); } } catch (e) {}
+      try { if (typeof gtag !== 'undefined') { gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' }); } } catch (e) {} try { if (typeof gtag !== 'undefined') { gtag('event', 'consent_accepted'); } } catch (e) {}
 
       hide();
 
