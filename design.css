@@ -2076,12 +2076,6 @@ svg.leaflet-zoom-animated{will-change:transform;}
 @media (max-width:1024px){.footer-grid.footer-grid-v2{grid-template-columns:1fr 1fr;}}
 @media (max-width:560px){.footer-grid.footer-grid-v2{grid-template-columns:1fr;}}
 
-/* -- Google Translate widget (header language switcher) -- */
-#google_translate_element{display:inline-flex;align-items:center;}
-#google_translate_element .goog-te-gadget{font-family:var(--font-ui);font-size:.72rem;color:var(--muted);white-space:nowrap;}
-#google_translate_element .goog-te-gadget a{display:none;}
-#google_translate_element select{background:var(--bg-alt,#f6f2ec);border:1px solid var(--line-2);border-radius:60px;padding:6px 10px;font-size:.75rem;font-weight:700;color:var(--brown);cursor:pointer;max-width:130px;}
-.goog-te-banner-frame.skiptranslate{display:none !important;}
 body{top:0 !important;}
 .skiptranslate iframe{display:none !important;}
 /* -- Cookie consent banner -- */
