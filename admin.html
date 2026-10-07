@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abrid Morocco — Admin Dashboard</title>
+  <style>
+    :root {
+      --primary: #2d5a27;
+      --accent: #e4002b;
+      --bg: #f4f2ef;
+      --card: #ffffff;
+      --text: #141414;
+      --muted: #6b6b70;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 1.2rem; }
+    header .status {
+      background: #333;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    /* Main content */
+    main {
+      max-width: 860px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      flex: 1;
+    }
+
+    h2 { color: var(--primary); margin-bottom: 1rem; }
+    h3 { color: var(--accent); margin-bottom: 0.5rem; }
+
+    /* Login screen */
+    #login-screen, #admin-screen { display: none; }
+    #login-screen.active, #admin-screen.active { display: block; }
+
+    .login-card {
+      max-width: 380px;
+      margin: 4rem auto;
+      padding: 2rem;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .login-card h2 { margin-bottom: 1rem; }
+    .login-card p { color: var(--muted); margin-bottom: 2rem; }
+    .login-card input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .login-card button {
+      width: 100%;
+      padding: 0.8rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .login-card button:hover { background: #367030; }
+
+    /* Admin dashboard */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .topbar h2 { font-size: 1.1rem; }
+    .topbar .count { color: var(--accent); font-weight: bold; }
+
+    /* Table */
+    #submissions-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    #submissions-table th,
+    #submissions-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    #submissions-table th { color: var(--muted); }
+    #submissions-table tr:hover { background: #faf9f8; }
+
+    /* Filters */
+    .filters { margin-bottom: 1rem; display: gap-20; }
+    .filters input, .filters select {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    /* No data */
+    .no-data { text-align: center; padding: 2rem; color: var(--muted); }
+
+    /* Logout */
+    #logout-btn { margin-top: 1rem; padding: 0.5rem 1rem; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; cursor: pointer; }
+    #logout-btn:hover { background: #e4e0e8; }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-card">
+    <h2>Admin Login</h2>
+    <p>Enter password to access submissions</p>
+    <input type="password" id="password-input" placeholder="Password" />
+    <button onclick="attemptLogin()">Enter</button>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="admin-screen">
+    <header>
+      <h1>Abrid Morocco Admin</h1>
+      <div class="status" id="status-text">Loading submissions…</div>
+      <button id="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <main>
+      <div class="topbar">
+        <h2>Form Submissions</h2>
+        <span class="count" id="submission-count">0</span>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="name-filter" placeholder="Filter by name" />
+        <select id="person-filter">
+          <option value="">All</option>
+          <option value="abdellah">Abdellah</option>
+          <option value="karim">Karim</option>
+        </select>
+      </div>
+
+      <table id="submissions-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Page</th>
+            <th>Person</th>
+            <th>Submitted</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+
+      <div class="no-data" id="no-data">No submissions yet.</div>
+    </main>
+  </div>
+
+  <script>
+    const CORRECT_PASSWORD = 'karimabdellah';
+    let loggedIn = false;
+
+    // --- Login ---
+    function attemptLogin() {
+      const pw = document.getElementById('password-input').value;
+      if (pw === CORRECT_PASSWORD) {
+        loggedIn = true;
+        document.getElementById('login-screen').classList.remove('active');
+        document.getElementById('admin-screen').classList.add('active');
+        loadSubmissions();
+      } else {
+        alert('Incorrect password. Try again.');
+      }
+    }
+
+    // --- Logout ---
+    function logout() {
+      loggedIn = false;
+      document.getElementById('admin-screen').classList.remove('active');
+      document.getElementById('login-screen').classList.add('active');
+      document.getElementById('password-input').value = '';
+    }
+
+    // --- Load submissions from Supabase ---
+    async function loadSubmissions(filters = {}) {
+      const status = document.getElementById('status-text');
+      status.textContent = 'Loading submissions…';
+
+      // Build query string
+      let query = '/api/submissions?';
+      if (filters.person) query += `person=eq.${filters.person}&`;
+      if (filters.name) query += `name=contains.${filters.name}&`;
+
+      try {
+        const res = await fetch(query + new Date().getTime()); // cache buster
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+          document.getElementById('no-data').style.display = 'block';
+          document.getElementById('table-body').innerHTML = '';
+          document.getElementById('submission-count').textContent = 0;
+          return;
+        }
+
+        document.getElementById('no-data').style.display = 'none';
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        let count = 0;
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          const submitted = new Date(row.submittedAt).toLocaleString();
+          tr.innerHTML = `
+            <td>${row.name || ''}</td>
+            <td>${row.phone || ''}</td>
+            <td>${row.email || ''}</td>
+            <td>${row.page || '/'}</td>
+            <td>${row.person || ''}</td>
+            <td>${submitted}</td>
+          `;
+          tbody.appendChild(tr);
+          count++;
+        });
+
+        document.getElementById('submission-count').textContent = count;
+      } catch (e) {
+        console.error('Failed to load submissions:', e);
+        status.textContent = 'Error loading submissions';
+      }
+    }
+
+    // --- Filter changes ---
+    document.getElementById('name-filter').addEventListener('input', (e) => {
+      loadSubmissions({ name: e.target.value });
+    });
+    document.getElementById('person-filter').addEventListener('change', (e) => {
+      loadSubmissions({ person: e.target.value });
+    });
+
+    // --- Initial load ---
+    // Check login status first
+    const already = localStorage.getItem('admin-logged-in');
+    if (already === '1') {
+      loggedIn = true;
+      document.getElementById('login-screen').classList.remove('active');
+      document.getElementById('admin-screen').classList.add('active');
+      loadSubmissions();
+    }
+
+    // Simulate login check on page load for demo purposes
+    // In production, you'd verify a session cookie or token
+    // Uncomment the next line if you want to auto-login for testing:
+    // document.getElementById('admin-screen').classList.add('active');
+    // document.getElementById('login-screen').classList.remove('active');
+    // loadSubmissions();
+  </script>
+</body>
+</html>
