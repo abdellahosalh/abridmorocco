@@ -1,12 +1,9 @@
 /**
  * Abrid Morocco — Google Consent Mode Status API
  * Vercel serverless function: GET /api/consent-status
- * 
- * Reports consent default/accept status based on the audit that was
- * already performed across 296 pages. Returns no secrets.
  */
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json');
 
@@ -32,4 +29,4 @@ export default async function handler(req, res) {
   };
 
   res.status(200).json(consentData);
-}
+};

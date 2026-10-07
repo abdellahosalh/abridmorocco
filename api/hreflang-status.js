@@ -1,13 +1,9 @@
 /**
  * Abrid Morocco — Hreflang Self-Reference Status API
  * Vercel serverless function: GET /api/hreflang-status
- * 
- * Reports hreflang self-reference status based on the fixes already
- * applied to 4 pages (destination-merzouga.html, itineraries.html,
- * fr/itineraries.html, es/itineraries.html).
  */
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json');
 
@@ -34,4 +30,4 @@ export default async function handler(req, res) {
   };
 
   res.status(200).json(statusData);
-}
+};
