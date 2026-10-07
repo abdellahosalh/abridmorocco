@@ -257,24 +257,6 @@ module.exports = async function handler(req, res) {
       ? viaResend(process.env.RESEND_API_KEY, subject, rows)
       : viaFormSubmit(subject, rows);
 
-    /* ── save a log copy to Supabase if credentials are present ────*/
-    const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supaKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    const submission = {
-      name: name || '',
-      phone: phone || '',
-      page: page || '/',
-      ref: ref || '-',
-      person: who,
-      country: country,
-      submittedAt: new Date().toISOString(),
-    }
-    let fetchJob = fetch(`${supaUrl}/rest/functions/log-submission`, {
-      method: 'POST',
-      headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(submission)
-    }).catch(() => {}) // never block WhatsApp
-
     job.then(function (result) {
       if (process.env.ENQUIRY_DEBUG) {
         console.log('[enquiry]', result.provider, who, country, page,

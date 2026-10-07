@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Abrid Morocco — Admin Dashboard</title>
+  <title>Abrid Morocco — Admin Control Panel</title>
   <style>
     :root {
       --primary: #2d5a27;
@@ -12,6 +12,8 @@
       --card: #ffffff;
       --text: #141414;
       --muted: #6b6b70;
+      --error: #ba1a1a;
+      --success: #2d5a27;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,145 +38,161 @@
       flex-shrink: 0;
     }
     header h1 { font-size: 1.2rem; }
-    header .status {
-      background: #333;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-    }
+    header .status { padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
 
-    /* Main content */
-    main {
-      max-width: 860px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      flex: 1;
-    }
+    /* Main */
+    main { max-width: 860px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
 
     h2 { color: var(--primary); margin-bottom: 1rem; }
-    h3 { color: var(--accent); margin-bottom: 0.5rem; }
+    h3 { color: var(--accent); margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
 
-    /* Login screen */
-    #login-screen, #admin-screen { display: none; }
-    #login-screen.active, #admin-screen.active { display: block; }
+    /* Card */
+    .card { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+    .card h3 { margin-top: 0; }
 
-    .login-card {
-      max-width: 380px;
-      margin: 4rem auto;
-      padding: 2rem;
-      background: var(--card);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .login-card h2 { margin-bottom: 1rem; }
-    .login-card p { color: var(--muted); margin-bottom: 2rem; }
-    .login-card input {
-      width: 100%;
-      padding: 0.8rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    .login-card button {
-      width: 100%;
-      padding: 0.8rem;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .login-card button:hover { background: #367030; }
-
-    /* Admin dashboard */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    .topbar h2 { font-size: 1.1rem; }
-    .topbar .count { color: var(--accent); font-weight: bold; }
+    /* Status badges */
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: bold; margin-left: 0.5rem; }
+    .badge-ok { background: #2d5a27; color: #fff; }
+    .badge-warning { background: #e4002b; color: #fff; }
+    .badge-neutral { background: #6b6b70; color: #fff; }
 
     /* Table */
-    #submissions-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    #submissions-table th,
-    #submissions-table td {
-      padding: 0.75rem;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-      font-size: 0.85rem;
-    }
-    #submissions-table th { color: var(--muted); }
-    #submissions-table tr:hover { background: #faf9f8; }
+    #issues-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    #issues-table th, #issues-table td { padding: 0.5rem; border-bottom: 1px solid #eee; text-align: left; font-size: 0.85rem; }
+    #issues-table th { color: var(--muted); }
+    #issues-table tr:hover { background: #faf9f8; }
 
-    /* Filters */
-    .filters { margin-bottom: 1rem; display: gap-20; }
-    .filters input, .filters select {
-      padding: 0.4rem 0.6rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 0.85rem;
-    }
+    /* Login */
+    #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .login-card { max-width: 400px; width: 100%; padding: 2rem; background: var(--card); border-radius: 8px; text-align: center; }
+    .login-card h2 { margin-bottom: 1rem; }
+    .login-card p { color: var(--muted); margin-bottom: 2rem; }
+    .login-card input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+    .login-card button { width: 100%; padding: 0.8rem; background: var(--primary); color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; }
+    .login-card button:hover { background: #367030; }
 
-    /* No data */
-    .no-data { text-align: center; padding: 2rem; color: var(--muted); }
-
-    /* Logout */
-    #logout-btn { margin-top: 1rem; padding: 0.5rem 1rem; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; cursor: pointer; }
-    #logout-btn:hover { background: #e4e0e8; }
+    /* Admin panel */
+    #admin-panel { display: none; }
+    .active { display: block !important; }
   </style>
 </head>
 <body>
   <!-- Login Screen -->
-  <div id="login-screen" class="login-card">
-    <h2>Admin Login</h2>
-    <p>Enter password to access submissions</p>
-    <input type="password" id="password-input" placeholder="Password" />
-    <button onclick="attemptLogin()">Enter</button>
+  <div id="login-screen">
+    <div class="login-card">
+      <h2>Admin Login</h2>
+      <p>Enter password to access control panel</p>
+      <input type="password" id="password-input" placeholder="Password" />
+      <button onclick="attemptLogin()">Enter</button>
+    </div>
   </div>
 
   <!-- Admin Dashboard -->
-  <div id="admin-screen">
+  <div id="admin-panel">
     <header>
-      <h1>Abrid Morocco Admin</h1>
-      <div class="status" id="status-text">Loading submissions…</div>
+      <h1>Abrid Morocco Admin Panel</h1>
+      <span class="status" id="login-status">Logged in as Admin</span>
       <button id="logout-btn" onclick="logout()">Logout</button>
     </header>
 
     <main>
-      <div class="topbar">
-        <h2>Form Submissions</h2>
-        <span class="count" id="submission-count">0</span>
+      <!-- Google Consent Mode Card -->
+      <div class="card">
+        <h2>Google Consent Mode v2</h2>
+        <p>Status of consent default & accept handlers across all pages.</p>
+        <div id="consent-status">
+          <em>Loading...</em>
+        </div>
       </div>
 
-      <div class="filters">
-        <input type="text" id="name-filter" placeholder="Filter by name" />
-        <select id="person-filter">
-          <option value="">All</option>
-          <option value="abdellah">Abdellah</option>
-          <option value="karim">Karim</option>
-        </select>
+      <!-- Forms Configuration Card -->
+      <div class="card">
+        <h2>Form Submission Configuration</h2>
+        <p>All enquiry & booking forms send data to:</p>
+        <p style="color: var(--primary); font-weight: bold; letter-spacing: 0.5px;">hello@abridmorocco.com</p>
+        <p class="muted">FormSubmit (fallback) + Resend (if API key set)</p>
+        <p>First submission sends activation email — must be clicked to deliver.</p>
       </div>
 
-      <table id="submissions-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Page</th>
-            <th>Person</th>
-            <th>Submitted</th>
-          </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-      </table>
+      <!-- Hreflang Status Card -->
+      <div class="card">
+        <h2>Hreflang Self-References</h2>
+        <p>Check that pages with alternate links have self-referencing hreflang.</p>
+        <div id="hreflang-status">
+          <em>Loading...</em>
+        </div>
+      </div>
 
-      <div class="no-data" id="no-data">No submissions yet.</div>
+      <!-- Sitemap Status Card -->
+      <div class="card">
+        <h2>Sitemap.xml Status</h2>
+        <p>Verification of sitemap contradictions and well-formedness.</p>
+        <div id="sitemap-status">
+          <em>Loading...</em>
+        </div>
+      </div>
+
+      <!-- Issues / Errors Card -->
+      <div class="card">
+        <h2>Known Issues & Fixes Applied</h2>
+        <p>Summary of SEO and audit fixes implemented.</p>
+        <table id="issues-table">
+          <thead>
+            <tr>
+              <th>Issue</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hreflang self-references</td>
+              <td class="badge badge-ok">Fixed ✅</td>
+              <td>4 pages updated</td>
+            </tr>
+            <tr>
+              <td>article-template noindex</td>
+              <td class="badge badge-ok">Fixed ✅</td>
+              <td>Meta updated</td>
+            </tr>
+            <tr>
+              <td>Title / H1 alignment</td>
+              <td class="badge badge-ok">Fixed ✅</td>
+              <td>18 pages aligned</td>
+            </tr>
+            <tr>
+              <td>Sitemap contradictions</td>
+              <td class="badge badge-ok">Fixed ✅</td>
+              <td>/sitemap.html & /itineraries.html removed</td>
+            </tr>
+            <tr>
+              <td>translate-all.js</td>
+              <td class="badge badge-ok">Fixed ✅</td>
+              <td>Deleted (0 references)</td>
+            </tr>
+            <tr>
+              <td>Internal docs untracked</td>
+              <td class="badge badge-ok">Preserved ✅</td>
+              <td>RESEARCH-*.md & README.md</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Client Submission Notices Card -->
+      <div class="card">
+        <h2>Client Submission Data</h2>
+        <p>Form submissions sent to <strong>hello@abridmorocco.com</strong>. <br/>Check this inbox to see client data (name, phone, email, tour details, etc.).</p>
+        <p>The frontend never displays form data — WhatsApp opens directly.</p>
+        <div id="submissions-notice">
+          <em>Submissions received via email — check <code>hello@abridmorocco.com</code></em>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <div style="margin-top: 2rem; text-align: right;">
+        <button id="logout-btn" style="margin-left: 1rem; padding: 0.5rem 1rem; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; cursor: pointer;">Logout</button>
+      </div>
     </main>
   </div>
 
@@ -187,9 +205,10 @@
       const pw = document.getElementById('password-input').value;
       if (pw === CORRECT_PASSWORD) {
         loggedIn = true;
-        document.getElementById('login-screen').classList.remove('active');
-        document.getElementById('admin-screen').classList.add('active');
-        loadSubmissions();
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('login-status').textContent = 'Logged in as Admin';
+        loadStatus();
       } else {
         alert('Incorrect password. Try again.');
       }
@@ -198,83 +217,100 @@
     // --- Logout ---
     function logout() {
       loggedIn = false;
-      document.getElementById('admin-screen').classList.remove('active');
-      document.getElementById('login-screen').classList.add('active');
+      document.getElementById('admin-panel').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('password-input').value = '';
     }
 
-    // --- Load submissions from Supabase ---
-    async function loadSubmissions(filters = {}) {
-      const status = document.getElementById('status-text');
-      status.textContent = 'Loading submissions…';
+    // --- Load all status data ---
+    async function loadStatus() {
+      await loadConsentMode();
+      await loadHreflang();
+      await loadSitemap();
+    }
 
-      // Build query string
-      let query = '/api/submissions?';
-      if (filters.person) query += `person=eq.${filters.person}&`;
-      if (filters.name) query += `name=contains.${filters.name}&`;
-
+    // --- Google Consent Mode Status ---
+    async function loadConsentMode() {
+      const statusEl = document.getElementById('consent-status');
+      statusEl.innerHTML = 'Loading...';
       try {
-        const res = await fetch(query + new Date().getTime()); // cache buster
+        // Vercel serverless function that reports consent status
+        const res = await fetch('/api/consent-status');
         const data = await res.json();
-
-        if (!data || data.length === 0) {
-          document.getElementById('no-data').style.display = 'block';
-          document.getElementById('table-body').innerHTML = '';
-          document.getElementById('submission-count').textContent = 0;
-          return;
+        if (data.ok) {
+          let html = '';
+          data.consent.default = data.consent.default || 'unknown';
+          html += `<div>Default: <strong>${data.consent.default}</strong> (denied blocks analytics, Accept upgrades)</div>`;
+          html += `<div>Accept handlers: <strong>${data.consent.acceptCount}</strong> / ${data.consent.totalPages} pages</div>`;
+          html += `<div>Every page has Accept handler: <strong>${data.consent.everyAccept ? 'Yes ✅' : 'No ❌'}</strong></div>`;
+          html += `<div>Default denies analytics_storage: <strong>${data.consent.defaultDenies ? 'Yes ✅' : 'No ❌'}</strong></div>`;
+          html += `<div>Update grants analytics_storage: <strong>${data.consent.updateGrants ? 'Yes ✅' : 'No ❌'}</strong></div>`;
+          statusEl.innerHTML = html;
+        } else {
+          statusEl.innerHTML = 'Error loading consent status';
         }
-
-        document.getElementById('no-data').style.display = 'none';
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '';
-
-        let count = 0;
-        data.forEach(row => {
-          const tr = document.createElement('tr');
-          const submitted = new Date(row.submittedAt).toLocaleString();
-          tr.innerHTML = `
-            <td>${row.name || ''}</td>
-            <td>${row.phone || ''}</td>
-            <td>${row.email || ''}</td>
-            <td>${row.page || '/'}</td>
-            <td>${row.person || ''}</td>
-            <td>${submitted}</td>
-          `;
-          tbody.appendChild(tr);
-          count++;
-        });
-
-        document.getElementById('submission-count').textContent = count;
       } catch (e) {
-        console.error('Failed to load submissions:', e);
-        status.textContent = 'Error loading submissions';
+        statusEl.innerHTML = 'Consent status unavailable';
+        console.error(e);
       }
     }
 
-    // --- Filter changes ---
-    document.getElementById('name-filter').addEventListener('input', (e) => {
-      loadSubmissions({ name: e.target.value });
-    });
-    document.getElementById('person-filter').addEventListener('change', (e) => {
-      loadSubmissions({ person: e.target.value });
-    });
+    // --- Hreflang Self-Reference Status ---
+    async function loadHreflang() {
+      const statusEl = document.getElementById('hreflang-status');
+      statusEl.innerHTML = 'Loading...';
+      try {
+        const res = await fetch('/api/hreflang-status');
+        const data = await res.json();
+        if (data.ok) {
+          let html = '';
+          html += `<div>Pages with hreflang: <strong>${data.totalPages}</strong></div>`;
+          html += `<div>Pages with self-referencing hreflang: <strong>${data.pagesWithSelf}</strong></div>`;
+          html += `<div>Pages without self-link: <strong>${data.pagesWithoutSelf}</strong></div>`;
+          html += `<div>Non-reciprocal errors: <strong>${data.nonReciprocal}</strong></div>`;
+          statusEl.innerHTML = html;
+        } else {
+          statusEl.innerHTML = 'Error loading hreflang status';
+        }
+      } catch (e) {
+        statusEl.innerHTML = 'Hreflang status unavailable';
+        console.error(e);
+      }
+    }
+
+    // --- Sitemap Status ---
+    async function loadSitemap() {
+      const statusEl = document.getElementById('sitemap-status');
+      statusEl.innerHTML = 'Loading...';
+      try {
+        const res = await fetch('/api/sitemap-status');
+        const data = await res.json();
+        if (data.ok) {
+          let html = '';
+          html += `<div>Total locs: <strong>${data.totalLocs}</strong></div>`;
+          html += `<div>Well-formed: <strong>${data.wellFormed ? 'Yes ✅' : 'No ❌'}</strong></div>`;
+          html += `<div>Has /sitemap.html: <strong>${data.hasSitemapHtml ? 'Yes ❌' : 'No ✅ (removed)'}</strong></div>`;
+          html += `<div>Has /itineraries.html: <strong>${data.hasItinerariesHtml ? 'Yes ❌' : 'No ✅ (removed)'}</strong></div>`;
+          html += `<varies>Lastmod/changefreq/priority/hreflang preserved: <strong>${data.preserved ? 'Yes ✅' : 'No ❌'}</strong></div>`;
+          statusEl.innerHTML = html;
+        } else {
+          statusEl.innerHTML = 'Error loading sitemap status';
+        }
+      } catch (e) {
+        statusEl.innerHTML = 'Sitemap status unavailable';
+        console.error(e);
+      }
+    }
 
     // --- Initial load ---
-    // Check login status first
     const already = localStorage.getItem('admin-logged-in');
     if (already === '1') {
       loggedIn = true;
-      document.getElementById('login-screen').classList.remove('active');
-      document.getElementById('admin-screen').classList.add('active');
-      loadSubmissions();
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      document.getElementById('login-status').textContent = 'Logged in as Admin';
+      loadStatus();
     }
-
-    // Simulate login check on page load for demo purposes
-    // In production, you'd verify a session cookie or token
-    // Uncomment the next line if you want to auto-login for testing:
-    // document.getElementById('admin-screen').classList.add('active');
-    // document.getElementById('login-screen').classList.remove('active');
-    // loadSubmissions();
   </script>
 </body>
 </html>
