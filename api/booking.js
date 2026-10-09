@@ -215,6 +215,8 @@ function viaFormSubmit(subject, d) {
 }
 
 /* ------------------------------------------------------------------ handler */
+const data = require('./_lib/data');
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json');
@@ -282,6 +284,23 @@ module.exports = async function handler(req, res) {
 
     const subject = 'Booking card ' + d.ref + ' — ' + d.tour +
       (d.name ? ' — ' + d.name : '');
+
+    /* Log booking to data layer for admin dashboard */
+    try {
+      data.createBooking({
+        name: d.name,
+        email: d.email,
+        phone: d.phone,
+        trip: d.tour,
+        travelers: parseInt((d.paxText || '1').replace(/\D/g, ''), 10) || 1,
+        travelDate: d.dateText || '',
+        status: 'new',
+        notes: d.requests || '',
+        ref: d.ref,
+      });
+    } catch (e) {
+      console.error('[booking-card] Failed to log booking:', e.message);
+    }
 
     /* No key, or no files: FormSubmit can still carry the details. */
     const job = (hasKey && attachments.length)

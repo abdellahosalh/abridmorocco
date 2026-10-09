@@ -1,0 +1,8 @@
+{
+  "businessName": "Abrid Morocco",
+  "contactEmail": "hello@abridmorocco.com",
+  "defaultCurrency": "EUR",
+  "supportedLanguages": ["en", "fr", "es"],
+  "bookingStatuses": ["new", "contacted", "awaiting_confirmation", "confirmed", "completed", "cancelled"],
+  "enquiryStatuses": ["new", "in_progress", "waiting_for_customer", "quotation_sent", "converted", "closed"]
+}

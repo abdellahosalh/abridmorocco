@@ -9,6 +9,9 @@
 *.xlsm
 *Booking_System*
 content-plan.json
+data/bookings.json
+data/enquiries.json
+data/activity_log.json
 
 # ---- build / tooling scripts ---------------------------------------
 *.py

@@ -192,6 +192,8 @@ function viaFormSubmit(subject, rows) {
 }
 
 /* ------------------------------------------------------------------ handler */
+const data = require('./_lib/data');
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json');
@@ -253,10 +255,47 @@ module.exports = async function handler(req, res) {
 
     const rows = rowsFor(who, number, country, page, ref, when, name, phone);
 
+    /* Log enquiry to data layer for admin dashboard */
+    try {
+      data.createEnquiry({
+        name: name,
+        phone: phone,
+        destination: page,
+        source: page,
+        message: 'WhatsApp enquiry via ' + who,
+        status: 'new',
+      });
+    } catch (e) {
+      console.error('[enquiry] Failed to log enquiry:', e.message);
+    }
+
     const job = hasKey
       ? viaResend(process.env.RESEND_API_KEY, subject, rows)
       : viaFormSubmit(subject, rows);
 
+    /* ── auto-log submission to admin panel ───────────────────────*/
+    const logSubmission = async () => {
+      try {
+        const res = await fetch('https://api.abridmorocco.com/submissions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name || '',
+            phone: phone || '',
+            page: page || '/',
+            ref: ref || '-',
+            person: who,
+            country: country,
+          })
+        })
+        const data = await res.json()
+        console.log('[submission-log]', data)
+      } catch (e) {
+        // never block WhatsApp if logging fails
+      }
+    }
+
+    logSubmission()
     job.then(function (result) {
       if (process.env.ENQUIRY_DEBUG) {
         console.log('[enquiry]', result.provider, who, country, page,

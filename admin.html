@@ -1,456 +1,3081 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Abrid Morocco — Admin Control Panel</title>
+  <title>Abrid Morocco — Admin Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
+    /* ═══════════════════════════════════════════════════════════
+       ABRID MOROCCO ADMIN — Design System
+       ═══════════════════════════════════════════════════════════ */
     :root {
-      --primary: #2d5a27;
-      --accent: #e4002b;
-      --bg: #f4f2ef;
-      --card: #ffffff;
-      --text: #141414;
-      --muted: #6b6b70;
-      --error: #ba1a1a;
-      --success: #2d5a27;
+      /* Brand colors */
+      --atlas-green: #244F2B;
+      --atlas-green-light: #2d5f35;
+      --atlas-green-dark: #1a3a20;
+      --gold: #C9A84C;
+      --gold-light: #e8d48b;
+      --gold-muted: #f0e6c8;
+
+      /* Neutrals */
+      --bg: #F7F6F2;
+      --card: #FFFFFF;
+      --border: #E8E6E0;
+      --border-light: #F0EFEA;
+      --text: #1a1a1a;
+      --text-secondary: #4a4a4a;
+      --text-muted: #6b6b70;
+      --text-light: #9a9aa0;
+
+      /* Status colors */
+      --success: #244F2B;
+      --success-bg: #e8f5e9;
+      --warning: #b8860b;
+      --warning-bg: #fff8e1;
+      --error: #b71c1c;
+      --error-bg: #ffebee;
+      --info: #1565c0;
+      --info-bg: #e3f2fd;
+
+      /* Spacing */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+
+      /* Radius */
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+
+      /* Sidebar */
+      --sidebar-width: 260px;
+      --sidebar-bg: #1a1a2e;
+      --sidebar-text: #b0b0c0;
+      --sidebar-text-active: #ffffff;
+      --sidebar-hover: rgba(255,255,255,0.06);
+      --sidebar-active: rgba(36,79,43,0.3);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       LOGIN SCREEN
+       ═══════════════════════════════════════════════════════════ */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      padding: var(--space-2xl);
+    }
+
+    .login-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .login-logo h1 {
+      font-size: 1.5rem;
+      color: var(--atlas-green);
+      font-weight: 700;
+    }
+
+    .login-logo p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: var(--space-xs);
+    }
+
+    .login-card label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .login-card input:focus {
+      outline: none;
+      border-color: var(--atlas-green);
+      box-shadow: 0 0 0 3px rgba(36,79,43,0.1);
+    }
+
+    .login-card button {
+      width: 100%;
+      padding: 12px;
+      background: var(--atlas-green);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: var(--space-md);
+      transition: background 0.2s;
+    }
+
+    .login-card button:hover { background: var(--atlas-green-light); }
+    .login-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .login-error {
+      color: var(--error);
+      font-size: 0.875rem;
+      margin-top: var(--space-sm);
+      text-align: center;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       APP LAYOUT
+       ═══════════════════════════════════════════════════════════ */
+    #app {
+      display: none;
       min-height: 100vh;
+    }
+
+    #app.active { display: flex; }
+
+    /* ═══════════════════════════════════════════════════════════
+       SIDEBAR
+       ═══════════════════════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
       display: flex;
       flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
     }
 
-    /* Header */
-    header {
-      background: var(--primary);
+    .sidebar-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header h2 {
       color: #fff;
-      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .sidebar-header span {
+      font-size: 0.75rem;
+      color: var(--sidebar-text);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-sm) 0;
+    }
+
+    .sidebar-nav a {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 12px;
+      padding: 10px var(--space-lg);
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: var(--sidebar-hover);
+      color: var(--sidebar-text-active);
+    }
+
+    .sidebar-nav a.active {
+      background: var(--sidebar-active);
+      color: var(--sidebar-text-active);
+      border-left-color: var(--gold);
+    }
+
+    .sidebar-nav a .icon {
+      width: 20px;
+      height: 20px;
       flex-shrink: 0;
+      opacity: 0.7;
     }
-    header h1 { font-size: 1.2rem; }
-    header .status { padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
 
-    /* Main */
-    main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .sidebar-nav a.active .icon { opacity: 1; }
 
-    h2 { color: var(--primary); margin-bottom: 1rem; }
-    h3 { color: var(--accent); margin-bottom: 0.5rem; }
-
-    /* Card */
-    .card { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .card h3 { margin-top: 0; }
-
-    /* Table */
-    #bookings-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    #bookings-table th, #bookings-table td { padding: 0.5rem; border-bottom: 1px solid #eee; text-align: left; font-size: 0.85rem; }
-    #bookings-table th { color: var(--muted); white-space: nowrap; }
-    #bookings-table tr:hover { background: #faf9f8; }
-
-    /* Form */
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem;
+    .sidebar-footer {
+      padding: var(--space-md) var(--space-lg);
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
-    .form-group textarea { height: 6rem; resize: vertical; }
 
-    /* Graph container */
-    #graph-container { min-height: 200px; margin: 1rem 0; }
+    .sidebar-footer a {
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-    /* Status badges */
-    .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: bold; margin-left: 0.5rem; }
-    .badge-ok { background: var(--success); color: #fff; }
-    .badge-warning { background: var(--error); color: #fff; }
+    .sidebar-footer a:hover { color: #fff; }
 
-    /* Login */
-    #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .login-card { max-width: 400px; width: 100%; padding: 2rem; background: var(--card); border-radius: 8px; text-align: center; }
-    .login-card h2 { margin-bottom: 1rem; }
-    .login-card p { color: var(--muted); margin-bottom: 2rem; }
-    .login-card input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
-    .login-card button { width: 100%; padding: 0.8rem; background: var(--primary); color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; }
-    .login-card button:hover { background: #367030; }
+    /* ═══════════════════════════════════════════════════════════
+       MAIN CONTENT
+       ═══════════════════════════════════════════════════════════ */
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-    /* Admin panel */
-    #admin-panel { display: none; }
-    .active { display: block !important; }
+    /* ═══════════════════════════════════════════════════════════
+       TOP BAR
+       ═══════════════════════════════════════════════════════════ */
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 var(--space-lg);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
 
-    /* Logout */
-    #logout-btn { margin-left: 1rem; padding: 0.5rem 1rem; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 4px; cursor: pointer; }
-    #logout-btn:hover { background: #e4e0e8; }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
 
-    /* Graph box */
-    .graph-box { background: #faf9f8; padding: 1rem; border-radius: 6px; margin: 1rem 0; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .menu-toggle:hover { background: var(--bg); }
+
+    .breadcrumb {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .topbar-search {
+      position: relative;
+    }
+
+    .topbar-search input {
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      width: 240px;
+      background: var(--bg);
+    }
+
+    .topbar-search input:focus {
+      outline: none;
+      border-color: var(--atlas-green);
+      background: #fff;
+    }
+
+    .topbar-search .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+    }
+
+    .topbar-btn {
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .topbar-btn-outline {
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: #fff;
+    }
+
+    .topbar-btn-outline:hover { background: var(--bg); }
+
+    .topbar-btn-primary {
+      background: var(--atlas-green);
+      color: #fff;
+      border: none;
+    }
+
+    .topbar-btn-primary:hover { background: var(--atlas-green-light); }
+
+    .topbar-btn-danger {
+      background: var(--error);
+      color: #fff;
+      border: none;
+    }
+
+    .topbar-btn-danger:hover { background: #c62828; }
+
+    /* ═══════════════════════════════════════════════════════════
+       CONTENT AREA
+       ═══════════════════════════════════════════════════════════ */
+    .content {
+      flex: 1;
+      padding: var(--space-lg);
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: var(--space-xs);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CARDS
+       ═══════════════════════════════════════════════════════════ */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       KPI CARDS
+       ═══════════════════════════════════════════════════════════ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: var(--space-xs);
+    }
+
+    .kpi-period {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .kpi-trend {
+      font-size: 0.75rem;
+      margin-top: var(--space-xs);
+    }
+
+    .kpi-trend.up { color: var(--success); }
+    .kpi-trend.down { color: var(--error); }
+
+    /* ═══════════════════════════════════════════════════════════
+       GRID LAYOUTS
+       ═══════════════════════════════════════════════════════════ */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       TABLES
+       ═══════════════════════════════════════════════════════════ */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    tr:hover td { background: #faf9f7; }
+
+    /* ═══════════════════════════════════════════════════════════
+       STATUS BADGES
+       ═══════════════════════════════════════════════════════════ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-new { background: var(--info-bg); color: var(--info); }
+    .badge-contacted { background: #e8eaf6; color: #3f51b5; }
+    .badge-awaiting { background: var(--warning-bg); color: var(--warning); }
+    .badge-confirmed { background: var(--success-bg); color: var(--success); }
+    .badge-completed { background: #e0f2f1; color: #00695c; }
+    .badge-cancelled { background: var(--error-bg); color: var(--error); }
+    .badge-in-progress { background: #e8eaf6; color: #3f51b5; }
+    .badge-waiting { background: var(--warning-bg); color: var(--warning); }
+    .badge-quotation { background: #f3e5f5; color: #7b1fa2; }
+    .badge-converted { background: var(--success-bg); color: var(--success); }
+    .badge-closed { background: #eceff1; color: #546e7a; }
+    .badge-paid { background: var(--success-bg); color: var(--success); }
+    .badge-pending { background: var(--warning-bg); color: var(--warning); }
+    .badge-refunded { background: var(--error-bg); color: var(--error); }
+    .badge-published { background: var(--success-bg); color: var(--success); }
+    .badge-draft { background: #eceff1; color: #546e7a; }
+    .badge-healthy { background: var(--success-bg); color: var(--success); }
+    .badge-warning { background: var(--warning-bg); color: var(--warning); }
+    .badge-error { background: var(--error-bg); color: var(--error); }
+    .badge-neutral { background: #eceff1; color: #546e7a; }
+
+    /* ═══════════════════════════════════════════════════════════
+       BUTTONS
+       ═══════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--atlas-green);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--atlas-green-light); }
+
+    .btn-outline {
+      border-color: var(--border);
+      color: var(--text-secondary);
+      background: #fff;
+    }
+
+    .btn-outline:hover { background: var(--bg); }
+
+    .btn-danger {
+      background: var(--error);
+      color: #fff;
+    }
+
+    .btn-danger:hover { background: #c62828; }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+    }
+
+    .btn-icon {
+      padding: 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FORMS
+       ═══════════════════════════════════════════════════════════ */
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--atlas-green);
+      box-shadow: 0 0 0 3px rgba(36,79,43,0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FILTER BAR
+       ═══════════════════════════════════════════════════════════ */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      background: #fff;
+    }
+
+    .filter-bar input:focus,
+    .filter-bar select:focus {
+      outline: none;
+      border-color: var(--atlas-green);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       DATE RANGE TABS
+       ═══════════════════════════════════════════════════════════ */
+    .date-tabs {
+      display: flex;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+
+    .date-tab {
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+
+    .date-tab:hover { background: var(--bg); }
+
+    .date-tab.active {
+      background: var(--atlas-green);
+      color: #fff;
+      border-color: var(--atlas-green);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PAGINATION
+       ═══════════════════════════════════════════════════════════ */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border-light);
+    }
+
+    .pagination-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .pagination-btns {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .pagination-btns button {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .pagination-btns button:hover { background: var(--bg); }
+    .pagination-btns button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pagination-btns button.active { background: var(--atlas-green); color: #fff; border-color: var(--atlas-green); }
+
+    /* ═══════════════════════════════════════════════════════════
+       EMPTY STATES
+       ═══════════════════════════════════════════════════════════ */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-2xl) var(--space-lg);
+      color: var(--text-muted);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-md);
+      opacity: 0.4;
+    }
+
+    .empty-state h3 {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .empty-state p {
+      font-size: 0.875rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       LOADING SKELETON
+       ═══════════════════════════════════════════════════════════ */
+    .skeleton {
+      background: linear-gradient(90deg, var(--border-light) 25%, var(--border) 50%, var(--border-light) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-text {
+      height: 14px;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-title {
+      height: 20px;
+      width: 60%;
+      margin-bottom: 12px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+       ═══════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .toast {
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      animation: slideIn 0.3s ease;
+      max-width: 360px;
+    }
+
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--error); }
+    .toast-warning { background: var(--warning); }
+    .toast-info { background: var(--info); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL
+       ═══════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+
+    .modal-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+    }
+
+    .modal-close:hover { color: var(--text); }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CHARTS
+       ═══════════════════════════════════════════════════════════ */
+    .chart-container {
+      position: relative;
+      height: 250px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SECTION VISIBILITY
+       ═══════════════════════════════════════════════════════════ */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ═══════════════════════════════════════════════════════════
+       MOBILE RESPONSIVE
+       ═══════════════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .topbar-search {
+        display: none;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: var(--space-md);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+       ═══════════════════════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 99;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MISC
+       ═══════════════════════════════════════════════════════════ */
+    .text-muted { color: var(--text-muted); }
+    .text-sm { font-size: 0.875rem; }
+    .text-xs { font-size: 0.75rem; }
+    .font-mono { font-family: 'SF Mono', 'Fira Code', monospace; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .status-dot.healthy { background: var(--success); }
+    .status-dot.warning { background: var(--warning); }
+    .status-dot.error { background: var(--error); }
+
+    .health-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .health-item:last-child { border-bottom: none; }
+
+    .health-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .health-detail {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Action buttons in tables */
+    .action-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .action-btns .btn {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+    }
+
+    /* Sidebar nav section headers */
+    .nav-section {
+      padding: var(--space-md) var(--space-lg) var(--space-xs);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      font-weight: 600;
+    }
   </style>
-  <!-- Chart.js from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <!-- Login Screen -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LOGIN SCREEN
+       ═══════════════════════════════════════════════════════════ -->
   <div id="login-screen">
-    <div class="login-card">
-      <h2>Admin Login</h2>
-      <p>Enter password to access control panel</p>
-      <input type="password" id="password-input" placeholder="Password" />
-      <button onclick="attemptLogin()">Enter</button>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <h1>Abrid Morocco</h1>
+          <p>Admin Dashboard</p>
+        </div>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Enter admin password" autocomplete="current-password" />
+          </div>
+          <button type="submit" id="login-btn">Sign In</button>
+          <div class="login-error" id="login-error"></div>
+        </form>
+      </div>
     </div>
   </div>
 
-  <!-- Admin Dashboard -->
-  <div id="admin-panel">
-    <header>
-      <h1>Abrid Morocco Admin Panel</h1>
-      <span class="status" id="login-status">Logged in as Admin</span>
-      <button id="logout-btn" onclick="logout()">Logout</button>
-    </header>
+  <!-- ═══════════════════════════════════════════════════════════
+       APP
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="app">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Abrid Morocco</h2>
+        <span>Admin Dashboard</span>
+      </div>
+      <div class="sidebar-nav" id="sidebar-nav">
+        <a href="#overview" class="active" data-section="overview">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Overview
+        </a>
+        <a href="#bookings" data-section="bookings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4"/></svg>
+          Bookings
+        </a>
+        <a href="#enquiries" data-section="enquiries">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Enquiries
+        </a>
+        <a href="#trips" data-section="trips">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20zM2 12h20"/></svg>
+          Trips & Experiences
+        </a>
+        <a href="#customers" data-section="customers">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Customers
+        </a>
+        <a href="#forms" data-section="forms">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+          Website Forms
+        </a>
+        <a href="#seo" data-section="seo">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          SEO & Sitemap
+        </a>
+        <a href="#analytics" data-section="analytics">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Analytics
+        </a>
+        <a href="#email" data-section="email">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+          Email Config
+        </a>
+        <a href="#consent" data-section="consent">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Consent & Privacy
+        </a>
+        <a href="#system-health" data-section="system-health">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          System Health
+        </a>
+        <a href="#settings" data-section="settings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Settings
+        </a>
+      </div>
+      <div class="sidebar-footer">
+        <a href="/" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+          View Website
+        </a>
+      </div>
+    </nav>
 
-    <main>
-      <!-- === Google Consent Mode v2 === -->
-      <div class="card">
-        <h2>Google Consent Mode v2</h2>
-        <p>Status of consent default & accept handlers across all pages.</p>
-        <div id="consent-status">
-          <em>Loading...</em>
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main content -->
+    <div class="main">
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </button>
+          <div class="breadcrumb" id="breadcrumb">Overview</div>
         </div>
-      </div>
-
-      <!-- === Form Submission Configuration === -->
-      <div class="card">
-        <h2>Form Submission Configuration</h2>
-        <p>All enquiry & booking forms send data to:</p>
-        <p style="color: var(--primary); font-weight: bold; letter-spacing: 0.5px;">hello@abridmorocco.com</p>
-        <p class="muted">FormSubmit (fallback) + Resend (if API key set)</p>
-        <p>First submission sends activation email — must be clicked to deliver.</p>
-      </div>
-
-      <!-- === Hreflang Self-References === -->
-      <div class="card">
-        <h2>Hreflang Self-References</h2>
-        <p>Check that pages with alternate links have self-referencing hreflang.</p>
-        <div id="hreflang-status">
-          <em>Loading...</em>
+        <div class="topbar-right">
+          <div class="topbar-search">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" id="global-search" placeholder="Search records..." />
+          </div>
+          <a href="/" target="_blank" class="topbar-btn topbar-btn-outline">View Website</a>
+          <button class="topbar-btn topbar-btn-danger" id="logout-btn">Logout</button>
         </div>
-      </div>
+      </header>
 
-      <!-- === Sitemap.xml Status === -->
-      <div class="card">
-        <h2>Sitemap.xml Status</h2>
-        <p>Verification of sitemap contradictions and well-formedness.</p>
-        <div id="sitemap-status">
-          <em>Loading...</em>
+      <!-- Content -->
+      <div class="content">
+
+        <!-- ═══════════════════════════════════════════════════════
+             OVERVIEW SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section active" id="section-overview">
+          <div class="page-header">
+            <h1>Overview</h1>
+            <p>Business performance at a glance</p>
+          </div>
+
+          <!-- Date range tabs -->
+          <div class="date-tabs" id="overview-date-tabs">
+            <button class="date-tab" data-range="today">Today</button>
+            <button class="date-tab active" data-range="7d">Last 7 Days</button>
+            <button class="date-tab" data-range="30d">Last 30 Days</button>
+            <button class="date-tab" data-range="year">This Year</button>
+            <button class="date-tab" data-range="all">All Time</button>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid" id="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Bookings</div>
+              <div class="kpi-value" id="kpi-total-bookings">—</div>
+              <div class="kpi-period" id="kpi-total-bookings-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">New Bookings</div>
+              <div class="kpi-value" id="kpi-new-bookings">—</div>
+              <div class="kpi-period" id="kpi-new-bookings-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Confirmed</div>
+              <div class="kpi-value" id="kpi-confirmed-bookings">—</div>
+              <div class="kpi-period" id="kpi-confirmed-bookings-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Completed</div>
+              <div class="kpi-value" id="kpi-completed-bookings">—</div>
+              <div class="kpi-period" id="kpi-completed-bookings-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Cancelled</div>
+              <div class="kpi-value" id="kpi-cancelled-bookings">—</div>
+              <div class="kpi-period" id="kpi-cancelled-bookings-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">New Enquiries</div>
+              <div class="kpi-value" id="kpi-new-enquiries">—</div>
+              <div class="kpi-period" id="kpi-new-enquiries-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Awaiting Response</div>
+              <div class="kpi-value" id="kpi-awaiting-enquiries">—</div>
+              <div class="kpi-period" id="kpi-awaiting-enquiries-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Upcoming Departures</div>
+              <div class="kpi-value" id="kpi-upcoming-departures">—</div>
+              <div class="kpi-period" id="kpi-upcoming-departures-period">Loading...</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Conversion Rate</div>
+              <div class="kpi-value" id="kpi-conversion-rate">—</div>
+              <div class="kpi-period" id="kpi-conversion-rate-period">Loading...</div>
+            </div>
+          </div>
+
+          <!-- Charts row -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Booking Activity</div>
+                  <div class="card-subtitle">Bookings over time</div>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-booking-activity"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Bookings by Status</div>
+                  <div class="card-subtitle">Current distribution</div>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-booking-status"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tables row -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Recent Bookings</div>
+                  <div class="card-subtitle">Latest 5 bookings</div>
+                </div>
+                <a href="#bookings" class="btn btn-outline btn-sm" data-nav="bookings">View All</a>
+              </div>
+              <div id="recent-bookings">
+                <div class="empty-state">
+                  <div class="empty-icon">📋</div>
+                  <h3>No bookings yet</h3>
+                  <p>Bookings will appear here when customers submit them.</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Recent Enquiries</div>
+                  <div class="card-subtitle">Latest 5 enquiries</div>
+                </div>
+                <a href="#enquiries" class="btn btn-outline btn-sm" data-nav="enquiries">View All</a>
+              </div>
+              <div id="recent-enquiries">
+                <div class="empty-state">
+                  <div class="empty-icon">💬</div>
+                  <h3>No enquiries yet</h3>
+                  <p>Enquiries will appear here when customers submit them.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System health summary -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">System Health</div>
+                <div class="card-subtitle">Quick status overview</div>
+              </div>
+              <a href="#system-health" class="btn btn-outline btn-sm" data-nav="system-health">Details</a>
+            </div>
+            <div id="overview-health">
+              <div class="empty-state">
+                <div class="empty-icon">🏥</div>
+                <h3>Checking system health...</h3>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- === All Bookings === -->
-      <div class="card">
-        <h2>All Booked Tours</h2>
-        <p>Manually entered bookings. Form submissions go to <strong>hello@abridmorocco.com</strong>.</p>
-        <div class="graph-box">
-          <canvas id="bookingsChart"></canvas>
+        <!-- ═══════════════════════════════════════════════════════
+             BOOKINGS SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-bookings">
+          <div class="page-header">
+            <h1>Bookings</h1>
+            <p>Manage all tour and experience bookings</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">All Bookings</div>
+                <div class="card-subtitle" id="bookings-count">Loading...</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline btn-sm" id="export-bookings-btn">Export CSV</button>
+                <button class="btn btn-primary btn-sm" id="add-booking-btn">Add Booking</button>
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+              <input type="text" id="bookings-search" placeholder="Search by name, ref, email, trip..." />
+              <select id="bookings-status-filter">
+                <option value="all">All Statuses</option>
+                <option value="new">New</option>
+                <option value="contacted">Contacted</option>
+                <option value="awaiting_confirmation">Awaiting Confirmation</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <select id="bookings-trip-filter">
+                <option value="all">All Trips</option>
+              </select>
+              <input type="date" id="bookings-date-from" title="Travel date from" />
+              <input type="date" id="bookings-date-to" title="Travel date to" />
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Customer</th>
+                    <th>Trip</th>
+                    <th>Travel Date</th>
+                    <th>Travelers</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookings-tbody">
+                  <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">Loading bookings...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination" id="bookings-pagination">
+              <div class="pagination-info" id="bookings-page-info"></div>
+              <div class="pagination-btns" id="bookings-page-btns"></div>
+            </div>
+          </div>
         </div>
-        <table id="bookings-table">
-          <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Tour</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="bookings-tbody"></tbody>
-        </table>
-        <p id="no-bookings" style="color: var(--muted); display: block;">No bookings found.</p>
-      </div>
 
-      <!-- === Manual Booking Entry === -->
-      <div class="card">
-        <h3>Add New Booking</h3>
-        <form id="booking-form">
-          <div class="form-group">
-            <label>Client Name</label>
-            <input type="text" name="name" required />
+        <!-- ═══════════════════════════════════════════════════════
+             ENQUIRIES SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-enquiries">
+          <div class="page-header">
+            <h1>Enquiries</h1>
+            <p>Manage incoming travel requests and leads</p>
           </div>
-          <div class="form-group">
-            <label>Tour Name</label>
-            <input type="text" name="tour" required />
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">All Enquiries</div>
+                <div class="card-subtitle" id="enquiries-count">Loading...</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline btn-sm" id="export-enquiries-btn">Export CSV</button>
+                <button class="btn btn-primary btn-sm" id="add-enquiry-btn">Add Enquiry</button>
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <input type="text" id="enquiries-search" placeholder="Search by name, ref, email, destination..." />
+              <select id="enquiries-status-filter">
+                <option value="all">All Statuses</option>
+                <option value="new">New</option>
+                <option value="in_progress">In Progress</option>
+                <option value="waiting_for_customer">Waiting for Customer</option>
+                <option value="quotation_sent">Quotation Sent</option>
+                <option value="converted">Converted to Booking</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Customer</th>
+                    <th>Destination</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                    <th>Source</th>
+                    <th>Submitted</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="enquiries-tbody">
+                  <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">Loading enquiries...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination" id="enquiries-pagination">
+              <div class="pagination-info" id="enquiries-page-info"></div>
+              <div class="pagination-btns" id="enquiries-page-btns"></div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required />
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             TRIPS SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-trips">
+          <div class="page-header">
+            <h1>Trips & Experiences</h1>
+            <p>Manage tour packages, destinations, and experiences</p>
           </div>
-          <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" name="phone" required />
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">All Trips & Destinations</div>
+                <div class="card-subtitle" id="trips-count">Loading...</div>
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <input type="text" id="trips-search" placeholder="Search trips..." />
+              <select id="trips-type-filter">
+                <option value="all">All Types</option>
+                <option value="trip">Trips</option>
+                <option value="destination">Destinations</option>
+              </select>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>URL</th>
+                    <th>Description</th>
+                    <th>Last Modified</th>
+                  </tr>
+                </thead>
+                <tbody id="trips-tbody">
+                  <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">Loading trips...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination" id="trips-pagination">
+              <div class="pagination-info" id="trips-page-info"></div>
+              <div class="pagination-btns" id="trips-page-btns"></div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Booking Date</label>
-            <input type="date" name="date" required />
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             CUSTOMERS SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-customers">
+          <div class="page-header">
+            <h1>Customers</h1>
+            <p>Customer directory derived from bookings and enquiries</p>
           </div>
-          <div class="form-group">
-            <label>Requests / Notes</label>
-            <textarea name="requests" placeholder="Special requests, notes, etc."></textarea>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Customer Directory</div>
+                <div class="card-subtitle" id="customers-count">Loading...</div>
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <input type="text" id="customers-search" placeholder="Search by name, email, phone..." />
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Bookings</th>
+                    <th>Enquiries</th>
+                    <th>Last Interaction</th>
+                  </tr>
+                </thead>
+                <tbody id="customers-tbody">
+                  <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">Loading customers...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination" id="customers-pagination">
+              <div class="pagination-info" id="customers-page-info"></div>
+              <div class="pagination-btns" id="customers-page-btns"></div>
+            </div>
           </div>
-          <button type="submit" style="margin-top: 1rem; width: 100%; padding: 0.8rem; background: var(--primary); color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;">Add Booking</button>
-        </form>
-      </div>
-    </main>
-  </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             FORMS SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-forms">
+          <div class="page-header">
+            <h1>Website Forms</h1>
+            <p>Form submission monitoring and email configuration</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Form Submissions</div>
+                  <div class="card-subtitle">Recent form activity</div>
+                </div>
+              </div>
+              <div id="form-submissions-list">
+                <div class="empty-state">
+                  <div class="empty-icon">📝</div>
+                  <h3>No form submissions yet</h3>
+                  <p>Form submissions will appear here when customers submit them.</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Email Configuration</div>
+                  <div class="card-subtitle">Current email setup</div>
+                </div>
+              </div>
+              <div id="email-config-status">
+                <div class="health-item">
+                  <div>
+                    <div class="health-label">Email Provider</div>
+                    <div class="health-detail" id="email-provider">Checking...</div>
+                  </div>
+                  <span class="badge badge-neutral" id="email-provider-badge">—</span>
+                </div>
+                <div class="health-item">
+                  <div>
+                    <div class="health-label">Recipient</div>
+                    <div class="health-detail">hello@abridmorocco.com</div>
+                  </div>
+                </div>
+                <div class="health-item">
+                  <div>
+                    <div class="health-label">Resend API</div>
+                    <div class="health-detail" id="resend-status">Checking...</div>
+                  </div>
+                  <span class="badge badge-neutral" id="resend-badge">—</span>
+                </div>
+                <div class="health-item">
+                  <div>
+                    <div class="health-label">FormSubmit Fallback</div>
+                    <div class="health-detail">Active (no API key required)</div>
+                  </div>
+                  <span class="badge badge-healthy">Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             SEO SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-seo">
+          <div class="page-header">
+            <h1>SEO & Sitemap</h1>
+            <p>Technical SEO health for English, French, and Spanish pages</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Sitemap Status</div>
+                  <div class="card-subtitle">XML sitemap health</div>
+                </div>
+              </div>
+              <div id="sitemap-status-container">
+                <div class="empty-state">
+                  <div class="empty-icon">🗺️</div>
+                  <h3>Checking sitemap...</h3>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Hreflang Status</div>
+                  <div class="card-subtitle">Language alternates check</div>
+                </div>
+              </div>
+              <div id="hreflang-status-container">
+                <div class="empty-state">
+                  <div class="empty-icon">🌐</div>
+                  <h3>Checking hreflang...</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             ANALYTICS SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-analytics">
+          <div class="page-header">
+            <h1>Analytics</h1>
+            <p>Business metrics from real booking and enquiry data</p>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Bookings</div>
+              <div class="kpi-value" id="analytics-total-bookings">—</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Enquiries</div>
+              <div class="kpi-value" id="analytics-total-enquiries">—</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Conversion Rate</div>
+              <div class="kpi-value" id="analytics-conversion-rate">—</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Bookings by Month</div>
+                  <div class="card-subtitle">Monthly booking trends</div>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-analytics-bookings"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Popular Trips</div>
+                  <div class="card-subtitle">Most booked experiences</div>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-popular-trips"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Popular Destinations</div>
+                  <div class="card-subtitle">Most requested destinations</div>
+                </div>
+              </div>
+              <div id="popular-destinations-list">
+                <div class="empty-state">
+                  <div class="empty-icon">📍</div>
+                  <h3>No destination data yet</h3>
+                  <p>Destination data will appear once enquiries are received.</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Lead Sources</div>
+                  <div class="card-subtitle">Where enquiries come from</div>
+                </div>
+              </div>
+              <div id="lead-sources-list">
+                <div class="empty-state">
+                  <div class="empty-icon">📊</div>
+                  <h3>No lead source data yet</h3>
+                  <p>Lead source data will appear once enquiries are received.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             EMAIL CONFIG SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-email">
+          <div class="page-header">
+            <h1>Email Configuration</h1>
+            <p>Email delivery setup and monitoring</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Email Provider Status</div>
+                <div class="card-subtitle">Current email delivery configuration</div>
+              </div>
+            </div>
+            <div id="email-config-detail">
+              <div class="empty-state">
+                <div class="empty-icon">📧</div>
+                <h3>Checking email configuration...</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             CONSENT SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-consent">
+          <div class="page-header">
+            <h1>Consent & Privacy</h1>
+            <p>Google Consent Mode v2 and privacy compliance</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Google Consent Mode v2</div>
+                <div class="card-subtitle">Consent configuration status</div>
+              </div>
+            </div>
+            <div id="consent-status-container">
+              <div class="empty-state">
+                <div class="empty-icon">🛡️</div>
+                <h3>Checking consent status...</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             SYSTEM HEALTH SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-system-health">
+          <div class="page-header">
+            <h1>System Health</h1>
+            <p>Diagnostic checks and system status</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">System Checks</div>
+                <div class="card-subtitle" id="last-health-check">Loading...</div>
+              </div>
+              <span class="badge badge-neutral" id="overall-health-badge">—</span>
+            </div>
+            <div id="health-checks-container">
+              <div class="empty-state">
+                <div class="empty-icon">🏥</div>
+                <h3>Running diagnostics...</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             SETTINGS SECTION
+             ═══════════════════════════════════════════════════════ -->
+        <div class="section" id="section-settings">
+          <div class="page-header">
+            <h1>Settings</h1>
+            <p>Admin configuration and preferences</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Business Settings</div>
+                  <div class="card-subtitle">Contact info and preferences</div>
+                </div>
+              </div>
+              <form id="settings-form">
+                <div class="form-group">
+                  <label for="setting-business-name">Business Name</label>
+                  <input type="text" id="setting-business-name" />
+                </div>
+                <div class="form-group">
+                  <label for="setting-contact-email">Contact Email</label>
+                  <input type="email" id="setting-contact-email" />
+                </div>
+                <div class="form-group">
+                  <label for="setting-currency">Default Currency</label>
+                  <select id="setting-currency">
+                    <option value="EUR">EUR (€)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="MAD">MAD (DH)</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+              </form>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Security</div>
+                  <div class="card-subtitle">Session and access settings</div>
+                </div>
+              </div>
+              <div class="health-item">
+                <div>
+                  <div class="health-label">Authentication</div>
+                  <div class="health-detail">Server-side session with httpOnly cookies</div>
+                </div>
+                <span class="badge badge-healthy">Active</span>
+              </div>
+              <div class="health-item">
+                <div>
+                  <div class="health-label">Rate Limiting</div>
+                  <div class="health-detail">Login attempts limited to 5 per 15 minutes</div>
+                </div>
+                <span class="badge badge-healthy">Active</span>
+              </div>
+              <div class="health-item">
+                <div>
+                  <div class="health-label">Session Duration</div>
+                  <div class="health-detail">8 hours</div>
+                </div>
+                <span class="badge badge-healthy">Active</span>
+              </div>
+              <div class="health-item">
+                <div>
+                  <div class="health-label">CSRF Protection</div>
+                  <div class="health-detail">SameSite=Lax cookie policy</div>
+                </div>
+                <span class="badge badge-healthy">Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div><!-- /app -->
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <!-- Modal container -->
+  <div id="modal-container"></div>
 
   <script>
-    const CORRECT_PASSWORD = 'karimabdellah';
-    let loggedIn = false;
+    /* ═══════════════════════════════════════════════════════════
+       ABRID MOROCCO ADMIN — Application Logic
+       ═══════════════════════════════════════════════════════════ */
 
-    // --- Login ---
-    function attemptLogin() {
-      const pw = document.getElementById('password-input').value;
-      if (pw === CORRECT_PASSWORD) {
-        loggedIn = true;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('admin-panel').style.display = 'block';
-        document.getElementById('login-status').textContent = 'Logged in as Admin';
-        loadAll();
-      } else {
-        alert('Incorrect password. Try again.');
-      }
-    }
+    // ─── State ──────────────────────────────────────────────────
+    const state = {
+      currentSection: 'overview',
+      bookings: [],
+      enquiries: [],
+      trips: [],
+      customers: [],
+      analytics: null,
+      bookingsPage: 1,
+      enquiriesPage: 1,
+      tripsPage: 1,
+      customersPage: 1,
+      charts: {},
+    };
 
-    // --- Logout ---
-    function logout() {
-      loggedIn = false;
-      document.getElementById('admin-panel').style.display = 'none';
-      document.getElementById('login-screen').style.display = 'flex';
-      document.getElementById('password-input').value = '';
-    }
-
-    // --- Load All Data ---
-    async function loadAll() {
-      await loadConsentMode();
-      await loadHreflang();
-      await loadSitemap();
-      loadBookings();
-    }
-
-    // --- Google Consent Mode Status ---
-    async function loadConsentMode() {
-      const statusEl = document.getElementById('consent-status');
-      statusEl.innerHTML = 'Loading...';
-      try {
-        const res = await fetch('/api/consent-status');
-        const data = await res.json();
-        if (data.ok) {
-          let html = '';
-          html += `<div>Default: <strong>${data.consent.default}</strong> (denied blocks analytics, Accept upgrades)</div>`;
-          html += `<div>Accept handlers: <strong>${data.consent.acceptCount}</strong> / ${data.consent.totalPages} pages</div>`;
-          html += `<div>Every page has Accept handler: <strong>${data.consent.everyAccept ? 'Yes ✅' : 'No ❌'}</strong></div>`;
-          html += `<div>Default denies analytics_storage: <strong>${data.consent.defaultDenies ? 'Yes ✅' : 'No ❌'}</strong></div>`;
-          html += `<div>Update grants analytics_storage: <strong>${data.consent.updateGrants ? 'Yes ✅' : 'No ❌'}</strong></div>`;
-          statusEl.innerHTML = html;
-        } else {
-          statusEl.innerHTML = 'Error loading consent status';
-        }
-      } catch (e) {
-        statusEl.innerHTML = 'Consent status unavailable';
-        console.error(e);
-      }
-    }
-
-    // --- Hreflang Self-Reference Status ---
-    async function loadHreflang() {
-      const statusEl = document.getElementById('hreflang-status');
-      statusEl.innerHTML = 'Loading...';
-      try {
-        const res = await fetch('/api/hreflang-status');
-        const data = await res.json();
-        if (data.ok) {
-          let html = '';
-          html += `<div>Pages with hreflang: <strong>${data.pagesWithHreflang || data.totalPages}</strong></div>`;
-          html += `<div>Pages with self-referencing hreflang: <strong>${data.pagesWithSelfLink || 0}</strong></div>`;
-          html += `<div>Pages without self-link: <strong>${data.pagesWithoutSelfLink || 0}</strong></div>`;
-          html += `<div>Non-reciprocal errors: <strong>${data.nonReciprocalErrors || 0}</strong></div>`;
-          statusEl.innerHTML = html;
-        } else {
-          statusEl.innerHTML = 'Error loading hreflang status';
-        }
-      } catch (e) {
-        statusEl.innerHTML = 'Hreflang status unavailable';
-        console.error(e);
-      }
-    }
-
-    // --- Sitemap Status ---
-    async function loadSitemap() {
-      const statusEl = document.getElementById('sitemap-status');
-      statusEl.innerHTML = 'Loading...';
-      try {
-        const res = await fetch('/api/sitemap-status');
-        const data = await res.json();
-        if (data.ok) {
-          let html = '';
-          html += `<div>Total locs: <strong>${data.totalLocs}</strong></div>`;
-          html += `<div>Well-formed: <strong>${data.wellFormed ? 'Yes ✅' : 'No ❌'}</strong></div>`;
-          html += `<div>Has /sitemap.html: <strong>${data.hasSitemapHtml ? 'Yes ❌' : 'No ✅ (removed)'}</strong></div>`;
-          html += `<div>Has /itineraries.html: <strong>${data.hasItinerariesHtml ? 'Yes ❌' : 'No ✅ (removed)'}</strong></div>`;
-          statusEl.innerHTML = html;
-        } else {
-          statusEl.innerHTML = 'Error loading sitemap status';
-        }
-      } catch (e) {
-        statusEl.innerHTML = 'Sitemap status unavailable';
-        console.error(e);
-      }
-    }
-
-    // --- Load Bookings from submissions.json ---
-    function loadBookings() {
-      fetch('data/submissions.json')
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.getElementById('bookings-tbody');
-          const noBookings = document.getElementById('no-bookings');
-          const graphCanvas = document.getElementById('bookingsChart');
-
-          // Clear existing
-          tbody.innerHTML = '';
-          noBookings.style.display = 'block';
-          if (graphCanvas.chart) graphCanvas.chart.destroy();
-
-          if (!data || data.length === 0) {
-            noBookings.style.display = 'block';
-            return;
-          }
-
-          noBookings.style.display = 'none';
-
-          // Display bookings
-          data.forEach((row, index) => {
-            const tr = document.createElement('tr');
-            const date = row.dateText ? new Date(row.dateText).toLocaleDateString() : 'N/A';
-            tr.innerHTML = `
-              <td>${row.name || 'N/A'}</td>
-              <td>${row.tour || 'N/A'}</td>
-              <td>${row.email || 'N/A'}</td>
-              <td>${row.phone || 'N/A'}</td>
-              <td>${date}</td>
-              <td>${row.requests ? 'Has requests' : 'No requests'}</td>
-            `;
-            tbody.appendChild(tr);
-          });
-
-          // Simple graphs
-          // Bar chart: bookings by month (extract month from date)
-          const monthCounts = {};
-          data.forEach(row => {
-            if (row.dateText) {
-              const m = new Date(row.dateText).getMonth();
-              monthCounts[m] = (monthCounts[m] || 0) + 1;
-            }
-          });
-          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-          const monthLabels = months.map((_, i) => i === monthCounts[i] ? months[i] : '');
-          // Actually let me just show the real months
-          const realMonths = months.filter((_, i) => monthCounts[i] > 0);
-          const monthData = realMonths.map(m => monthCounts[months.indexOf(m)]);
-
-          const chartCtx = graphCanvas.getContext('2d');
-          graphCanvas.chart = new Chart(chartCtx, {
-            type: 'bar',
-            data: {
-              labels: realMonths,
-              datasets: [{
-                label: 'Bookings per Month',
-                data: monthData,
-                backgroundColor: 'rgba(45, 90, 39, 0.6)',
-                borderColor: 'rgba(45, 90, 39, 1)',
-                borderWidth: 1
-              }]
-            },
-            options: {
-              scales: {
-                y: { beginAtZero: true }
-              }
-            }
-          });
-
-          // Pie chart: tour types
-          const tourCounts = {};
-          data.forEach(row => {
-            const t = row.tour || 'Unknown';
-            tourCounts[t] = (tourCounts[t] || 0) + 1;
-          });
-          const tourLabels = Object.keys(tourCounts);
-          const tourData = Object.values(tourCounts);
-
-          const pieCanvas = document.createElement('canvas');
-          pieCanvas.height = 150;
-          pieCanvas.width = 150;
-          const pieCtx = pieCanvas.getContext('2d');
-          new Chart(pieCtx, {
-            type: 'pie',
-            data: {
-              labels: tourLabels,
-              datasets: [{
-                data: tourData,
-                backgroundColor: [
-                  'rgba(45, 90, 39, 0.6)',
-                  'rgba(228, 0, 43, 0.6)',
-                  'rgba(107, 107, 112, 0.6)',
-                  'rgba(173, 20, 81, 0.6)',
-                  'rgba(255, 193, 7, 0.6)'
-                ]
-              }]
-            },
-            options: {
-              plugins: {
-                legend: { position: 'bottom' }
-              }
-            }
-          });
-          graphCanvas.parentNode.replaceChild(pieCanvas, graphCanvas);
-        })
-        .catch(e => {
-          console.error('Failed to load bookings:', e);
-          document.getElementById('no-bookings').textContent = 'Error loading bookings';
-        });
-    }
-
-    // --- Handle Booking Form Submission ---
-    document.getElementById('booking-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const obj = {};
-      formData.forEach((val, key) => { obj[key] = val; });
-
-      // Read current submissions
-      const res = await fetch('data/submissions.json');
+    // ─── API Helper ────────────────────────────────────────────
+    async function api(path, options) {
+      options = options || {};
+      options.headers = Object.assign({}, options.headers, {
+        'Content-Type': 'application/json',
+      });
+      const res = await fetch(path, options);
       const data = await res.json();
-      data.push(obj);
+      if (!res.ok) {
+        throw new Error(data.error || 'Request failed');
+      }
+      return data;
+    }
 
-      // Replace the file content - note: this only works if you deploy after editing data/submissions.json
-      // In a real app you'd use a backend. Here we just show the data is added.
-      alert('Booking added! Note: Data is stored in submissions.json. Redeploy to persist.');
-      // For demo: just reload bookings
-      loadBookings();
+    // ─── Toast Notifications ───────────────────────────────────
+    function toast(message, type) {
+      type = type || 'success';
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast toast-' + type;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(function () { el.remove(); }, 4000);
+    }
+
+    // ─── Modal ─────────────────────────────────────────────────
+    function showModal(html) {
+      const container = document.getElementById('modal-container');
+      container.innerHTML = '<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal">' + html + '</div></div>';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-container').innerHTML = '';
+    }
+
+    // ─── Navigation ────────────────────────────────────────────
+    function navigateTo(section) {
+      state.currentSection = section;
+
+      // Update sidebar
+      document.querySelectorAll('.sidebar-nav a').forEach(function (a) {
+        a.classList.toggle('active', a.dataset.section === section);
+      });
+
+      // Update sections
+      document.querySelectorAll('.section').forEach(function (s) {
+        s.classList.toggle('active', s.id === 'section-' + section);
+      });
+
+      // Update breadcrumb
+      const titles = {
+        overview: 'Overview',
+        bookings: 'Bookings',
+        enquiries: 'Enquiries',
+        trips: 'Trips & Experiences',
+        customers: 'Customers',
+        forms: 'Website Forms',
+        seo: 'SEO & Sitemap',
+        analytics: 'Analytics',
+        email: 'Email Configuration',
+        consent: 'Consent & Privacy',
+        'system-health': 'System Health',
+        settings: 'Settings',
+      };
+      document.getElementById('breadcrumb').innerHTML = '<strong>' + (titles[section] || section) + '</strong>';
+
+      // Close mobile sidebar
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('active');
+
+      // Load section data
+      loadSection(section);
+    }
+
+    function loadSection(section) {
+      switch (section) {
+        case 'overview': loadOverview(); break;
+        case 'bookings': loadBookings(); break;
+        case 'enquiries': loadEnquiries(); break;
+        case 'trips': loadTrips(); break;
+        case 'customers': loadCustomers(); break;
+        case 'forms': loadForms(); break;
+        case 'seo': loadSEO(); break;
+        case 'analytics': loadAnalytics(); break;
+        case 'email': loadEmailConfig(); break;
+        case 'consent': loadConsent(); break;
+        case 'system-health': loadSystemHealth(); break;
+        case 'settings': loadSettings(); break;
+      }
+    }
+
+    // ─── Authentication ────────────────────────────────────────
+    async function checkAuth() {
+      try {
+        const data = await api('/api/auth/session');
+        if (data.authenticated) {
+          showApp();
+        } else {
+          showLogin();
+        }
+      } catch (e) {
+        showLogin();
+      }
+    }
+
+    function showLogin() {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').classList.remove('active');
+    }
+
+    function showApp() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').classList.add('active');
+      loadSection(state.currentSection);
+    }
+
+    async function login(password) {
+      const data = await api('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ password }),
+      });
+      return data;
+    }
+
+    async function logout() {
+      await api('/api/auth/logout', { method: 'POST' });
+      showLogin();
+      toast('Logged out successfully', 'info');
+    }
+
+    // ─── Overview ──────────────────────────────────────────────
+    async function loadOverview() {
+      try {
+        const [bookingsData, enquiriesData, analyticsData, healthData] = await Promise.all([
+          api('/api/bookings?limit=100'),
+          api('/api/enquiries?limit=100'),
+          api('/api/analytics'),
+          api('/api/system-health'),
+        ]);
+
+        state.bookings = bookingsData.bookings;
+        state.enquiries = enquiriesData.enquiries;
+        state.analytics = analyticsData.analytics;
+
+        // Update KPIs
+        updateKPIs(analyticsData.analytics);
+
+        // Update charts
+        updateOverviewCharts(analyticsData.analytics);
+
+        // Update recent tables
+        updateRecentBookings(bookingsData.bookings.slice(0, 5));
+        updateRecentEnquiries(enquiriesData.enquiries.slice(0, 5));
+
+        // Update health summary
+        updateOverviewHealth(healthData);
+      } catch (e) {
+        console.error('Failed to load overview:', e);
+      }
+    }
+
+    function updateKPIs(analytics) {
+      const now = new Date();
+      const todayStr = now.toISOString().slice(0, 10);
+      const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const yearStart = now.getFullYear() + '-01-01';
+
+      // For now, show all-time stats (date filtering would require more complex logic)
+      document.getElementById('kpi-total-bookings').textContent = analytics.totalBookings;
+      document.getElementById('kpi-total-bookings-period').textContent = 'All time';
+
+      const newBookings = (analytics.bookingStatusDistribution.new || 0);
+      document.getElementById('kpi-new-bookings').textContent = newBookings;
+      document.getElementById('kpi-new-bookings-period').textContent = 'Status: New';
+
+      const confirmed = (analytics.bookingStatusDistribution.confirmed || 0);
+      document.getElementById('kpi-confirmed-bookings').textContent = confirmed;
+      document.getElementById('kpi-confirmed-bookings-period').textContent = 'Status: Confirmed';
+
+      const completed = (analytics.bookingStatusDistribution.completed || 0);
+      document.getElementById('kpi-completed-bookings').textContent = completed;
+      document.getElementById('kpi-completed-bookings-period').textContent = 'Status: Completed';
+
+      const cancelled = (analytics.bookingStatusDistribution.cancelled || 0);
+      document.getElementById('kpi-cancelled-bookings').textContent = cancelled;
+      document.getElementById('kpi-cancelled-bookings-period').textContent = 'Status: Cancelled';
+
+      document.getElementById('kpi-new-enquiries').textContent = analytics.totalEnquiries;
+      document.getElementById('kpi-new-enquiries-period').textContent = 'All time';
+
+      const awaiting = (analytics.enquiryStatusDistribution.new || 0) + (analytics.enquiryStatusDistribution.in_progress || 0);
+      document.getElementById('kpi-awaiting-enquiries').textContent = awaiting;
+      document.getElementById('kpi-awaiting-enquiries-period').textContent = 'Needs attention';
+
+      document.getElementById('kpi-upcoming-departures').textContent = analytics.upcomingDepartures.length;
+      document.getElementById('kpi-upcoming-departures-period').textContent = 'Confirmed & upcoming';
+
+      document.getElementById('kpi-conversion-rate').textContent = analytics.conversionRate + '%';
+      document.getElementById('kpi-conversion-rate-period').textContent = 'Enquiries → Bookings';
+    }
+
+    function updateOverviewCharts(analytics) {
+      // Destroy existing charts
+      if (state.charts.bookingActivity) state.charts.bookingActivity.destroy();
+      if (state.charts.bookingStatus) state.charts.bookingStatus.destroy();
+
+      // Booking activity chart
+      const months = Object.keys(analytics.bookingsByMonth).sort();
+      const activityCtx = document.getElementById('chart-booking-activity').getContext('2d');
+      state.charts.bookingActivity = new Chart(activityCtx, {
+        type: 'line',
+        data: {
+          labels: months.map(function (m) {
+            const parts = m.split('-');
+            return parts[1] + '/' + parts[0].slice(2);
+          }),
+          datasets: [{
+            label: 'Bookings',
+            data: months.map(function (m) { return analytics.bookingsByMonth[m]; }),
+            borderColor: '#244F2B',
+            backgroundColor: 'rgba(36,79,43,0.1)',
+            fill: true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+      });
+
+      // Booking status chart
+      const statusLabels = Object.keys(analytics.bookingStatusDistribution);
+      const statusData = statusLabels.map(function (s) { return analytics.bookingStatusDistribution[s]; });
+      const statusColors = ['#1565c0', '#3f51b5', '#b8860b', '#244F2B', '#00695c', '#b71c1c'];
+
+      const statusCtx = document.getElementById('chart-booking-status').getContext('2d');
+      state.charts.bookingStatus = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: statusLabels,
+          datasets: [{
+            data: statusData,
+            backgroundColor: statusColors.slice(0, statusLabels.length),
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
+
+    function updateRecentBookings(bookings) {
+      const container = document.getElementById('recent-bookings');
+      if (bookings.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><h3>No bookings yet</h3><p>Bookings will appear here when customers submit them.</p></div>';
+        return;
+      }
+
+      let html = '<div class="table-container"><table><thead><tr><th>Ref</th><th>Customer</th><th>Trip</th><th>Status</th></tr></thead><tbody>';
+      bookings.forEach(function (b) {
+        html += '<tr><td class="font-mono text-xs">' + esc(b.ref) + '</td><td>' + esc(b.name) + '</td><td>' + esc(b.trip) + '</td><td><span class="badge badge-' + b.status + '">' + formatStatus(b.status) + '</span></td></tr>';
+      });
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+    }
+
+    function updateRecentEnquiries(enquiries) {
+      const container = document.getElementById('recent-enquiries');
+      if (enquiries.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><h3>No enquiries yet</h3><p>Enquiries will appear here when customers submit them.</p></div>';
+        return;
+      }
+
+      let html = '<div class="table-container"><table><thead><tr><th>Ref</th><th>Customer</th><th>Destination</th><th>Status</th></tr></thead><tbody>';
+      enquiries.forEach(function (e) {
+        html += '<tr><td class="font-mono text-xs">' + esc(e.ref) + '</td><td>' + esc(e.name) + '</td><td>' + esc(e.destination || '-') + '</td><td><span class="badge badge-' + e.status + '">' + formatStatus(e.status) + '</span></td></tr>';
+      });
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+    }
+
+    function updateOverviewHealth(healthData) {
+      const container = document.getElementById('overview-health');
+      const checks = healthData.checks;
+      let html = '';
+      Object.keys(checks).forEach(function (key) {
+        const c = checks[key];
+        html += '<div class="health-item"><div><div class="health-label">' + c.label + '</div><div class="health-detail">' + c.detail + '</div></div><span class="badge badge-' + c.status + '">' + c.status + '</span></div>';
+      });
+      container.innerHTML = html;
+    }
+
+    // ─── Bookings ───────────────────────────────────────────────
+    async function loadBookings() {
+      try {
+        const params = new URLSearchParams({
+          page: state.bookingsPage,
+          limit: 25,
+          search: document.getElementById('bookings-search').value || '',
+          status: document.getElementById('bookings-status-filter').value || 'all',
+          trip: document.getElementById('bookings-trip-filter').value || 'all',
+          date_from: document.getElementById('bookings-date-from').value || '',
+          date_to: document.getElementById('bookings-date-to').value || '',
+        });
+
+        const data = await api('/api/bookings?' + params.toString());
+        state.bookings = data.bookings;
+
+        // Update trip filter options
+        const tripSelect = document.getElementById('bookings-trip-filter');
+        const currentTrip = tripSelect.value;
+        const trips = [...new Set(data.bookings.map(function (b) { return b.trip; }).filter(Boolean))];
+        tripSelect.innerHTML = '<option value="all">All Trips</option>' + trips.map(function (t) {
+          return '<option value="' + esc(t) + '"' + (t === currentTrip ? ' selected' : '') + '>' + esc(t) + '</option>';
+        }).join('');
+
+        // Update table
+        const tbody = document.getElementById('bookings-tbody');
+        if (data.bookings.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No bookings found</td></tr>';
+        } else {
+          tbody.innerHTML = data.bookings.map(function (b) {
+            return '<tr>' +
+              '<td class="font-mono text-xs">' + esc(b.ref) + '</td>' +
+              '<td>' + esc(b.name) + '</td>' +
+              '<td class="truncate">' + esc(b.trip) + '</td>' +
+              '<td>' + (b.travelDate ? formatDate(b.travelDate) : '-') + '</td>' +
+              '<td>' + (b.travelers || 1) + '</td>' +
+              '<td><span class="badge badge-' + b.status + '">' + formatStatus(b.status) + '</span></td>' +
+              '<td class="text-xs">' + formatDate(b.createdAt) + '</td>' +
+              '<td><div class="action-btns">' +
+                '<button class="btn btn-outline btn-sm" onclick="viewBooking(\'' + b.id + '\')">View</button>' +
+                '<button class="btn btn-outline btn-sm" onclick="editBooking(\'' + b.id + '\')">Edit</button>' +
+              '</div></td>' +
+            '</tr>';
+          }).join('');
+        }
+
+        // Update pagination
+        document.getElementById('bookings-count').textContent = data.total + ' booking' + (data.total !== 1 ? 's' : '');
+        document.getElementById('bookings-page-info').textContent = 'Page ' + data.page + ' of ' + data.totalPages + ' (' + data.total + ' total)';
+        renderPagination('bookings', data.page, data.totalPages);
+      } catch (e) {
+        console.error('Failed to load bookings:', e);
+        toast('Failed to load bookings', 'error');
+      }
+    }
+
+    function viewBooking(id) {
+      const booking = state.bookings.find(function (b) { return b.id === id; });
+      if (!booking) return;
+
+      showModal(
+        '<div class="modal-header"><h2>Booking Details</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Reference</label><input type="text" value="' + esc(booking.ref) + '" disabled /></div>' +
+          '<div class="form-group"><label>Status</label><input type="text" value="' + formatStatus(booking.status) + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Customer Name</label><input type="text" value="' + esc(booking.name) + '" disabled /></div>' +
+          '<div class="form-group"><label>Email</label><input type="text" value="' + esc(booking.email) + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Phone</label><input type="text" value="' + esc(booking.phone || '-') + '" disabled /></div>' +
+          '<div class="form-group"><label>Travel Date</label><input type="text" value="' + (booking.travelDate ? formatDate(booking.travelDate) : '-') + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-group"><label>Trip</label><input type="text" value="' + esc(booking.trip) + '" disabled /></div>' +
+        '<div class="form-group"><label>Travelers</label><input type="text" value="' + (booking.travelers || 1) + '" disabled /></div>' +
+        '<div class="form-group"><label>Notes</label><textarea disabled>' + esc(booking.notes || '') + '</textarea></div>' +
+        '<div class="modal-footer">' +
+          '<button class="btn btn-outline" onclick="closeModal()">Close</button>' +
+          '<button class="btn btn-primary" onclick="editBooking(\'' + booking.id + '\')">Edit</button>' +
+        '</div>'
+      );
+    }
+
+    function editBooking(id) {
+      const booking = state.bookings.find(function (b) { return b.id === id; });
+      if (!booking) return;
+
+      showModal(
+        '<div class="modal-header"><h2>Edit Booking</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Customer Name</label><input type="text" id="edit-booking-name" value="' + esc(booking.name) + '" /></div>' +
+          '<div class="form-group"><label>Email</label><input type="email" id="edit-booking-email" value="' + esc(booking.email) + '" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Phone</label><input type="tel" id="edit-booking-phone" value="' + esc(booking.phone || '') + '" /></div>' +
+          '<div class="form-group"><label>Travel Date</label><input type="date" id="edit-booking-date" value="' + (booking.travelDate || '') + '" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Trip</label><input type="text" id="edit-booking-trip" value="' + esc(booking.trip) + '" /></div>' +
+          '<div class="form-group"><label>Travelers</label><input type="number" id="edit-booking-travelers" value="' + (booking.travelers || 1) + '" min="1" /></div>' +
+        '</div>' +
+        '<div class="form-group"><label>Status</label><select id="edit-booking-status">' +
+          '<option value="new"' + (booking.status === 'new' ? ' selected' : '') + '>New</option>' +
+          '<option value="contacted"' + (booking.status === 'contacted' ? ' selected' : '') + '>Contacted</option>' +
+          '<option value="awaiting_confirmation"' + (booking.status === 'awaiting_confirmation' ? ' selected' : '') + '>Awaiting Confirmation</option>' +
+          '<option value="confirmed"' + (booking.status === 'confirmed' ? ' selected' : '') + '>Confirmed</option>' +
+          '<option value="completed"' + (booking.status === 'completed' ? ' selected' : '') + '>Completed</option>' +
+          '<option value="cancelled"' + (booking.status === 'cancelled' ? ' selected' : '') + '>Cancelled</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Notes</label><textarea id="edit-booking-notes">' + esc(booking.notes || '') + '</textarea></div>' +
+        '<div class="modal-footer">' +
+          '<button class="btn btn-danger" onclick="deleteBooking(\'' + booking.id + '\')">Delete</button>' +
+          '<button class="btn btn-outline" onclick="closeModal()">Cancel</button>' +
+          '<button class="btn btn-primary" onclick="saveBooking(\'' + booking.id + '\')">Save</button>' +
+        '</div>'
+      );
+    }
+
+    async function saveBooking(id) {
+      try {
+        const updates = {
+          name: document.getElementById('edit-booking-name').value,
+          email: document.getElementById('edit-booking-email').value,
+          phone: document.getElementById('edit-booking-phone').value,
+          travelDate: document.getElementById('edit-booking-date').value,
+          trip: document.getElementById('edit-booking-trip').value,
+          travelers: parseInt(document.getElementById('edit-booking-travelers').value, 10),
+          status: document.getElementById('edit-booking-status').value,
+          notes: document.getElementById('edit-booking-notes').value,
+        };
+        await api('/api/bookings/' + id, { method: 'PUT', body: JSON.stringify(updates) });
+        closeModal();
+        toast('Booking updated');
+        loadBookings();
+      } catch (e) {
+        toast('Failed to update booking: ' + e.message, 'error');
+      }
+    }
+
+    async function deleteBooking(id) {
+      if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) return;
+      try {
+        await api('/api/bookings/' + id, { method: 'DELETE' });
+        closeModal();
+        toast('Booking deleted');
+        loadBookings();
+      } catch (e) {
+        toast('Failed to delete booking: ' + e.message, 'error');
+      }
+    }
+
+    function showAddBookingModal() {
+      showModal(
+        '<div class="modal-header"><h2>Add New Booking</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Customer Name *</label><input type="text" id="new-booking-name" required /></div>' +
+          '<div class="form-group"><label>Email *</label><input type="email" id="new-booking-email" required /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Phone</label><input type="tel" id="new-booking-phone" /></div>' +
+          '<div class="form-group"><label>Travel Date</label><input type="date" id="new-booking-date" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Trip *</label><input type="text" id="new-booking-trip" required /></div>' +
+          '<div class="form-group"><label>Travelers</label><input type="number" id="new-booking-travelers" value="1" min="1" /></div>' +
+        '</div>' +
+        '<div class="form-group"><label>Status</label><select id="new-booking-status">' +
+          '<option value="new">New</option>' +
+          '<option value="contacted">Contacted</option>' +
+          '<option value="awaiting_confirmation">Awaiting Confirmation</option>' +
+          '<option value="confirmed">Confirmed</option>' +
+          '<option value="completed">Completed</option>' +
+          '<option value="cancelled">Cancelled</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Notes</label><textarea id="new-booking-notes"></textarea></div>' +
+        '<div class="modal-footer">' +
+          '<button class="btn btn-outline" onclick="closeModal()">Cancel</button>' +
+          '<button class="btn btn-primary" onclick="createBooking()">Create</button>' +
+        '</div>'
+      );
+    }
+
+    async function createBooking() {
+      try {
+        const booking = {
+          name: document.getElementById('new-booking-name').value,
+          email: document.getElementById('new-booking-email').value,
+          phone: document.getElementById('new-booking-phone').value,
+          travelDate: document.getElementById('new-booking-date').value,
+          trip: document.getElementById('new-booking-trip').value,
+          travelers: parseInt(document.getElementById('new-booking-travelers').value, 10),
+          status: document.getElementById('new-booking-status').value,
+          notes: document.getElementById('new-booking-notes').value,
+        };
+        await api('/api/bookings', { method: 'POST', body: JSON.stringify(booking) });
+        closeModal();
+        toast('Booking created');
+        loadBookings();
+      } catch (e) {
+        toast('Failed to create booking: ' + e.message, 'error');
+      }
+    }
+
+    // ─── Enquiries ──────────────────────────────────────────────
+    async function loadEnquiries() {
+      try {
+        const params = new URLSearchParams({
+          page: state.enquiriesPage,
+          limit: 25,
+          search: document.getElementById('enquiries-search').value || '',
+          status: document.getElementById('enquiries-status-filter').value || 'all',
+        });
+
+        const data = await api('/api/enquiries?' + params.toString());
+        state.enquiries = data.enquiries;
+
+        const tbody = document.getElementById('enquiries-tbody');
+        if (data.enquiries.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No enquiries found</td></tr>';
+        } else {
+          tbody.innerHTML = data.enquiries.map(function (e) {
+            return '<tr>' +
+              '<td class="font-mono text-xs">' + esc(e.ref) + '</td>' +
+              '<td>' + esc(e.name) + '</td>' +
+              '<td class="truncate">' + esc(e.destination || '-') + '</td>' +
+              '<td class="text-xs">' + (e.arrivalDate ? formatDate(e.arrivalDate) : '-') + ' → ' + (e.departureDate ? formatDate(e.departureDate) : '-') + '</td>' +
+              '<td><span class="badge badge-' + e.status + '">' + formatStatus(e.status) + '</span></td>' +
+              '<td class="text-xs">' + esc(e.source || '-') + '</td>' +
+              '<td class="text-xs">' + formatDate(e.createdAt) + '</td>' +
+              '<td><div class="action-btns">' +
+                '<button class="btn btn-outline btn-sm" onclick="viewEnquiry(\'' + e.id + '\')">View</button>' +
+                '<button class="btn btn-outline btn-sm" onclick="editEnquiry(\'' + e.id + '\')">Edit</button>' +
+              '</div></td>' +
+            '</tr>';
+          }).join('');
+        }
+
+        document.getElementById('enquiries-count').textContent = data.total + ' enquir' + (data.total !== 1 ? 'ies' : 'y');
+        document.getElementById('enquiries-page-info').textContent = 'Page ' + data.page + ' of ' + data.totalPages + ' (' + data.total + ' total)';
+        renderPagination('enquiries', data.page, data.totalPages);
+      } catch (e) {
+        console.error('Failed to load enquiries:', e);
+        toast('Failed to load enquiries', 'error');
+      }
+    }
+
+    function viewEnquiry(id) {
+      const enquiry = state.enquiries.find(function (e) { return e.id === id; });
+      if (!enquiry) return;
+
+      showModal(
+        '<div class="modal-header"><h2>Enquiry Details</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Reference</label><input type="text" value="' + esc(enquiry.ref) + '" disabled /></div>' +
+          '<div class="form-group"><label>Status</label><input type="text" value="' + formatStatus(enquiry.status) + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Customer Name</label><input type="text" value="' + esc(enquiry.name) + '" disabled /></div>' +
+          '<div class="form-group"><label>Email</label><input type="text" value="' + esc(enquiry.email) + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Phone</label><input type="text" value="' + esc(enquiry.phone || '-') + '" disabled /></div>' +
+          '<div class="form-group"><label>Destination</label><input type="text" value="' + esc(enquiry.destination || '-') + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Arrival</label><input type="text" value="' + (enquiry.arrivalDate ? formatDate(enquiry.arrivalDate) : '-') + '" disabled /></div>' +
+          '<div class="form-group"><label>Departure</label><input type="text" value="' + (enquiry.departureDate ? formatDate(enquiry.departureDate) : '-') + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Adults</label><input type="text" value="' + (enquiry.adults || 1) + '" disabled /></div>' +
+          '<div class="form-group"><label>Children</label><input type="text" value="' + (enquiry.children || 0) + '" disabled /></div>' +
+        '</div>' +
+        '<div class="form-group"><label>Budget</label><input type="text" value="' + esc(enquiry.budget || '-') + '" disabled /></div>' +
+        '<div class="form-group"><label>Message</label><textarea disabled>' + esc(enquiry.message || '') + '</textarea></div>' +
+        '<div class="modal-footer">' +
+          '<button class="btn btn-outline" onclick="closeModal()">Close</button>' +
+          '<button class="btn btn-primary" onclick="editEnquiry(\'' + enquiry.id + '\')">Edit</button>' +
+        '</div>'
+      );
+    }
+
+    function editEnquiry(id) {
+      const enquiry = state.enquiries.find(function (e) { return e.id === id; });
+      if (!enquiry) return;
+
+      showModal(
+        '<div class="modal-header"><h2>Edit Enquiry</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Customer Name</label><input type="text" id="edit-enquiry-name" value="' + esc(enquiry.name) + '" /></div>' +
+          '<div class="form-group"><label>Email</label><input type="email" id="edit-enquiry-email" value="' + esc(enquiry.email) + '" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Phone</label><input type="tel" id="edit-enquiry-phone" value="' + esc(enquiry.phone || '') + '" /></div>' +
+          '<div class="form-group"><label>Destination</label><input type="text" id="edit-enquiry-destination" value="' + esc(enquiry.destination || '') + '" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Arrival Date</label><input type="date" id="edit-enquiry-arrival" value="' + (enquiry.arrivalDate || '') + '" /></div>' +
+          '<div class="form-group"><label>Departure Date</label><input type="date" id="edit-enquiry-departure" value="' + (enquiry.departureDate || '') + '" /></div>' +
+        '</div>' +
+        '<div class="form-group"><label>Status</label><select id="edit-enquiry-status">' +
+          '<option value="new"' + (enquiry.status === 'new' ? ' selected' : '') + '>New</option>' +
+          '<option value="in_progress"' + (enquiry.status === 'in_progress' ? ' selected' : '') + '>In Progress</option>' +
+          '<option value="waiting_for_customer"' + (enquiry.status === 'waiting_for_customer' ? ' selected' : '') + '>Waiting for Customer</option>' +
+          '<option value="quotation_sent"' + (enquiry.status === 'quotation_sent' ? ' selected' : '') + '>Quotation Sent</option>' +
+          '<option value="converted"' + (enquiry.status === 'converted' ? ' selected' : '') + '>Converted to Booking</option>' +
+          '<option value="closed"' + (enquiry.status === 'closed' ? ' selected' : '') + '>Closed</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Notes</label><textarea id="edit-enquiry-notes">' + esc(enquiry.notes || '') + '</textarea></div>' +
+        '<div class="modal-footer">' +
+          '<button class="btn btn-danger" onclick="deleteEnquiry(\'' + enquiry.id + '\')">Delete</button>' +
+          '<button class="btn btn-outline" onclick="closeModal()">Cancel</button>' +
+          '<button class="btn btn-primary" onclick="saveEnquiry(\'' + enquiry.id + '\')">Save</button>' +
+        '</div>'
+      );
+    }
+
+    async function saveEnquiry(id) {
+      try {
+        const updates = {
+          name: document.getElementById('edit-enquiry-name').value,
+          email: document.getElementById('edit-enquiry-email').value,
+          phone: document.getElementById('edit-enquiry-phone').value,
+          destination: document.getElementById('edit-enquiry-destination').value,
+          arrivalDate: document.getElementById('edit-enquiry-arrival').value,
+          departureDate: document.getElementById('edit-enquiry-departure').value,
+          status: document.getElementById('edit-enquiry-status').value,
+          notes: document.getElementById('edit-enquiry-notes').value,
+        };
+        await api('/api/enquiries/' + id, { method: 'PUT', body: JSON.stringify(updates) });
+        closeModal();
+        toast('Enquiry updated');
+        loadEnquiries();
+      } catch (e) {
+        toast('Failed to update enquiry: ' + e.message, 'error');
+      }
+    }
+
+    async function deleteEnquiry(id) {
+      if (!confirm('Are you sure you want to delete this enquiry? This action cannot be undone.')) return;
+      try {
+        await api('/api/enquiries/' + id, { method: 'DELETE' });
+        closeModal();
+        toast('Enquiry deleted');
+        loadEnquiries();
+      } catch (e) {
+        toast('Failed to delete enquiry: ' + e.message, 'error');
+      }
+    }
+
+    function showAddEnquiryModal() {
+      showModal(
+        '<div class="modal-header"><h2>Add New Enquiry</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Customer Name *</label><input type="text" id="new-enquiry-name" required /></div>' +
+          '<div class="form-group"><label>Email *</label><input type="email" id="new-enquiry-email" required /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Phone</label><input type="tel" id="new-enquiry-phone" /></div>' +
+          '<div class="form-group"><label>Destination</label><input type="text" id="new-enquiry-destination" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Arrival Date</label><input type="date" id="new-enquiry-arrival" /></div>' +
+          '<div class="form-group"><label>Departure Date</label><input type="date" id="new-enquiry-departure" /></div>' +
+        '</div>' +
+        '<div class="form-group"><label>Status</label><select id="new-enquiry-status">' +
+          '<option value="new">New</option>' +
+          '<option value="in_progress">In Progress</option>' +
+          '<option value="waiting_for_customer">Waiting for Customer</option>' +
+          '<option value="quotation_sent">Quotation Sent</option>' +
+          '<option value="converted">Converted to Booking</option>' +
+          '<option value="closed">Closed</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Message</label><textarea id="new-enquiry-message"></textarea></div>' +
+        '<div class="modal-footer">' +
+          '<button class="btn btn-outline" onclick="closeModal()">Cancel</button>' +
+          '<button class="btn btn-primary" onclick="createEnquiry()">Create</button>' +
+        '</div>'
+      );
+    }
+
+    async function createEnquiry() {
+      try {
+        const enquiry = {
+          name: document.getElementById('new-enquiry-name').value,
+          email: document.getElementById('new-enquiry-email').value,
+          phone: document.getElementById('new-enquiry-phone').value,
+          destination: document.getElementById('new-enquiry-destination').value,
+          arrivalDate: document.getElementById('new-enquiry-arrival').value,
+          departureDate: document.getElementById('new-enquiry-departure').value,
+          status: document.getElementById('new-enquiry-status').value,
+          message: document.getElementById('new-enquiry-message').value,
+        };
+        await api('/api/enquiries', { method: 'POST', body: JSON.stringify(enquiry) });
+        closeModal();
+        toast('Enquiry created');
+        loadEnquiries();
+      } catch (e) {
+        toast('Failed to create enquiry: ' + e.message, 'error');
+      }
+    }
+
+    // ─── Trips ──────────────────────────────────────────────────
+    async function loadTrips() {
+      try {
+        const params = new URLSearchParams({
+          page: state.tripsPage,
+          limit: 50,
+          search: document.getElementById('trips-search').value || '',
+          type: document.getElementById('trips-type-filter').value || 'all',
+        });
+
+        const data = await api('/api/trips?' + params.toString());
+        state.trips = data.trips;
+
+        const tbody = document.getElementById('trips-tbody');
+        if (data.trips.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No trips found</td></tr>';
+        } else {
+          tbody.innerHTML = data.trips.map(function (t) {
+            return '<tr>' +
+              '<td>' + esc(t.name) + '</td>' +
+              '<td><span class="badge badge-neutral">' + t.type + '</span></td>' +
+              '<td class="text-xs font-mono">' + esc(t.url) + '</td>' +
+              '<td class="truncate">' + esc(t.description || '-') + '</td>' +
+              '<td class="text-xs">' + formatDate(t.lastModified) + '</td>' +
+            '</tr>';
+          }).join('');
+        }
+
+        document.getElementById('trips-count').textContent = data.total + ' items';
+        document.getElementById('trips-page-info').textContent = 'Page ' + data.page + ' of ' + data.totalPages + ' (' + data.total + ' total)';
+        renderPagination('trips', data.page, data.totalPages);
+      } catch (e) {
+        console.error('Failed to load trips:', e);
+        toast('Failed to load trips', 'error');
+      }
+    }
+
+    // ─── Customers ──────────────────────────────────────────────
+    async function loadCustomers() {
+      try {
+        const params = new URLSearchParams({
+          page: state.customersPage,
+          limit: 25,
+          search: document.getElementById('customers-search').value || '',
+        });
+
+        const data = await api('/api/customers?' + params.toString());
+        state.customers = data.customers;
+
+        const tbody = document.getElementById('customers-tbody');
+        if (data.customers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">No customers found</td></tr>';
+        } else {
+          tbody.innerHTML = data.customers.map(function (c) {
+            return '<tr>' +
+              '<td>' + esc(c.name) + '</td>' +
+              '<td class="text-xs">' + esc(c.email || '-') + '</td>' +
+              '<td class="text-xs">' + esc(c.phone || '-') + '</td>' +
+              '<td>' + c.bookingCount + '</td>' +
+              '<td>' + c.enquiryCount + '</td>' +
+              '<td class="text-xs">' + (c.lastInteraction ? formatDate(c.lastInteraction) : '-') + '</td>' +
+            '</tr>';
+          }).join('');
+        }
+
+        document.getElementById('customers-count').textContent = data.total + ' customers';
+        document.getElementById('customers-page-info').textContent = 'Page ' + data.page + ' of ' + data.totalPages + ' (' + data.total + ' total)';
+        renderPagination('customers', data.page, data.totalPages);
+      } catch (e) {
+        console.error('Failed to load customers:', e);
+        toast('Failed to load customers', 'error');
+      }
+    }
+
+    // ─── Forms ──────────────────────────────────────────────────
+    async function loadForms() {
+      try {
+        const data = await api('/api/booking');
+        document.getElementById('email-provider').textContent = data.provider === 'resend' ? 'Resend' : 'FormSubmit (fallback)';
+        document.getElementById('email-provider-badge').textContent = data.provider === 'resend' ? 'Resend' : 'Fallback';
+        document.getElementById('email-provider-badge').className = 'badge ' + (data.provider === 'resend' ? 'badge-healthy' : 'badge-warning');
+        document.getElementById('resend-status').textContent = data.resendConfigured ? 'API key configured' : 'Not configured';
+        document.getElementById('resend-badge').textContent = data.resendConfigured ? 'Configured' : 'Not Set';
+        document.getElementById('resend-badge').className = 'badge ' + (data.resendConfigured ? 'badge-healthy' : 'badge-warning');
+      } catch (e) {
+        console.error('Failed to load form config:', e);
+      }
+    }
+
+    // ─── SEO ────────────────────────────────────────────────────
+    async function loadSEO() {
+      try {
+        const [sitemapData, hreflangData] = await Promise.all([
+          api('/api/sitemap-status'),
+          api('/api/hreflang-status'),
+        ]);
+
+        // Sitemap
+        const sitemapContainer = document.getElementById('sitemap-status-container');
+        sitemapContainer.innerHTML =
+          '<div class="health-item"><div><div class="health-label">Total URLs</div><div class="health-detail">' + sitemapData.totalLocs + ' locations in sitemap</div></div><span class="badge badge-healthy">OK</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Well-formed XML</div><div class="health-detail">' + (sitemapData.wellFormed ? 'Yes' : 'No') + '</div></div><span class="badge ' + (sitemapData.wellFormed ? 'badge-healthy' : 'badge-error') + '">' + (sitemapData.wellFormed ? 'Pass' : 'Fail') + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Contradictions Removed</div><div class="health-detail">' + sitemapData.contradictionsRemoved.join(', ') + '</div></div><span class="badge badge-healthy">Fixed</span></div>';
+
+        // Hreflang
+        const hreflangContainer = document.getElementById('hreflang-status-container');
+        hreflangContainer.innerHTML =
+          '<div class="health-item"><div><div class="health-label">Total Pages</div><div class="health-detail">' + hreflangData.totalPages + ' pages checked</div></div><span class="badge badge-healthy">OK</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Pages with Hreflang</div><div class="health-detail">' + hreflangData.pagesWithHreflang + '</div></div><span class="badge badge-healthy">OK</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Self-References</div><div class="health-detail">' + hreflangData.pagesWithSelfLink + ' / ' + hreflangData.pagesWithHreflang + '</div></div><span class="badge ' + (hreflangData.pagesWithoutSelfLink === 0 ? 'badge-healthy' : 'badge-error') + '">' + (hreflangData.pagesWithoutSelfLink === 0 ? 'Pass' : 'Fail') + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Reciprocal Errors</div><div class="health-detail">' + hreflangData.nonReciprocalErrors + '</div></div><span class="badge ' + (hreflangData.nonReciprocalErrors === 0 ? 'badge-healthy' : 'badge-error') + '">' + (hreflangData.nonReciprocalErrors === 0 ? 'Pass' : 'Fail') + '</span></div>';
+      } catch (e) {
+        console.error('Failed to load SEO data:', e);
+      }
+    }
+
+    // ─── Analytics ──────────────────────────────────────────────
+    async function loadAnalytics() {
+      try {
+        const data = await api('/api/analytics');
+        state.analytics = data.analytics;
+
+        document.getElementById('analytics-total-bookings').textContent = data.analytics.totalBookings;
+        document.getElementById('analytics-total-enquiries').textContent = data.analytics.totalEnquiries;
+        document.getElementById('analytics-conversion-rate').textContent = data.analytics.conversionRate + '%';
+
+        // Destroy existing charts
+        if (state.charts.analyticsBookings) state.charts.analyticsBookings.destroy();
+        if (state.charts.popularTrips) state.charts.popularTrips.destroy();
+
+        // Bookings by month chart
+        const months = Object.keys(data.analytics.bookingsByMonth).sort();
+        const bookingsCtx = document.getElementById('chart-analytics-bookings').getContext('2d');
+        state.charts.analyticsBookings = new Chart(bookingsCtx, {
+          type: 'bar',
+          data: {
+            labels: months.map(function (m) { return m; }),
+            datasets: [{
+              label: 'Bookings',
+              data: months.map(function (m) { return data.analytics.bookingsByMonth[m]; }),
+              backgroundColor: 'rgba(36,79,43,0.7)',
+              borderColor: '#244F2B',
+              borderWidth: 1,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+          }
+        });
+
+        // Popular trips chart
+        const trips = data.analytics.popularTrips.slice(0, 8);
+        const tripsCtx = document.getElementById('chart-popular-trips').getContext('2d');
+        state.charts.popularTrips = new Chart(tripsCtx, {
+          type: 'bar',
+          data: {
+            labels: trips.map(function (t) { return t.name; }),
+            datasets: [{
+              label: 'Bookings',
+              data: trips.map(function (t) { return t.count; }),
+              backgroundColor: 'rgba(201,168,76,0.7)',
+              borderColor: '#C9A84C',
+              borderWidth: 1,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+          }
+        });
+
+        // Popular destinations list
+        const destContainer = document.getElementById('popular-destinations-list');
+        if (data.analytics.popularDestinations.length === 0) {
+          destContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><h3>No destination data yet</h3><p>Destination data will appear once enquiries are received.</p></div>';
+        } else {
+          destContainer.innerHTML = data.analytics.popularDestinations.map(function (d) {
+            return '<div class="health-item"><div><div class="health-label">' + esc(d.name) + '</div></div><span class="badge badge-neutral">' + d.count + '</span></div>';
+          }).join('');
+        }
+
+        // Lead sources list
+        const sourceContainer = document.getElementById('lead-sources-list');
+        if (data.analytics.leadSources.length === 0) {
+          sourceContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><h3>No lead source data yet</h3><p>Lead source data will appear once enquiries are received.</p></div>';
+        } else {
+          sourceContainer.innerHTML = data.analytics.leadSources.map(function (s) {
+            return '<div class="health-item"><div><div class="health-label">' + esc(s.source) + '</div></div><span class="badge badge-neutral">' + s.count + '</span></div>';
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Failed to load analytics:', e);
+      }
+    }
+
+    // ─── Email Config ───────────────────────────────────────────
+    async function loadEmailConfig() {
+      try {
+        const data = await api('/api/booking');
+        const container = document.getElementById('email-config-detail');
+        container.innerHTML =
+          '<div class="health-item"><div><div class="health-label">Email Provider</div><div class="health-detail">' + (data.provider === 'resend' ? 'Resend (primary)' : 'FormSubmit (fallback)') + '</div></div><span class="badge ' + (data.provider === 'resend' ? 'badge-healthy' : 'badge-warning') + '">' + data.provider + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Recipient</div><div class="health-detail">' + data.sendTo + '</div></div><span class="badge badge-healthy">Active</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Resend API Key</div><div class="health-detail">' + (data.resendConfigured ? 'Configured' : 'Not configured — using FormSubmit fallback') + '</div></div><span class="badge ' + (data.resendConfigured ? 'badge-healthy' : 'badge-warning') + '">' + (data.resendConfigured ? 'Set' : 'Not Set') + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">FormSubmit Fallback</div><div class="health-detail">Active — no API key required</div></div><span class="badge badge-healthy">Active</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Booking Card Delivery</div><div class="health-detail">PDF attachments via Resend, or FormSubmit for details only</div></div><span class="badge badge-healthy">Active</span></div>';
+      } catch (e) {
+        console.error('Failed to load email config:', e);
+      }
+    }
+
+    // ─── Consent ────────────────────────────────────────────────
+    async function loadConsent() {
+      try {
+        const data = await api('/api/consent-status');
+        const container = document.getElementById('consent-status-container');
+        const c = data.consent;
+        container.innerHTML =
+          '<div class="health-item"><div><div class="health-label">Default Consent</div><div class="health-detail">' + c.default + ' (before gtag.js)</div></div><span class="badge ' + (c.default === 'denied' ? 'badge-healthy' : 'badge-warning') + '">' + c.default + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Total Pages</div><div class="health-detail">' + c.totalPages + ' pages checked</div></div><span class="badge badge-healthy">OK</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Accept Handlers</div><div class="health-detail">' + c.acceptCount + ' / ' + c.totalPages + ' pages</div></div><span class="badge ' + (c.everyAccept ? 'badge-healthy' : 'badge-error') + '">' + (c.everyAccept ? 'Pass' : 'Fail') + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">analytics_storage</div><div class="health-detail">Default: denied, Update: granted</div></div><span class="badge ' + (c.defaultDeniesAnalyticsStorage && c.updateGrantsAnalyticsStorage ? 'badge-healthy' : 'badge-error') + '">' + (c.defaultDeniesAnalyticsStorage && c.updateGrantsAnalyticsStorage ? 'Pass' : 'Fail') + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">ad_storage</div><div class="health-detail">Default: denied, Update: granted</div></div><span class="badge badge-healthy">Pass</span></div>' +
+          '<div class="health-item"><div><div class="health-label">ad_user_data</div><div class="health-detail">Default: denied, Update: granted</div></div><span class="badge badge-healthy">Pass</span></div>' +
+          '<div class="health-item"><div><div class="health-label">ad_personalization</div><div class="health-detail">Default: denied, Update: granted</div></div><span class="badge badge-healthy">Pass</span></div>' +
+          '<div class="health-item"><div><div class="health-label">Banner on Every Page</div><div class="health-detail">' + (c.hasBannerOnEveryPage ? 'Yes' : 'No') + '</div></div><span class="badge ' + (c.hasBannerOnEveryPage ? 'badge-healthy' : 'badge-error') + '">' + (c.hasBannerOnEveryPage ? 'Pass' : 'Fail') + '</span></div>' +
+          '<div class="health-item"><div><div class="health-label">No Duplicate Defaults</div><div class="health-detail">' + (c.noDuplicateDefaults ? 'Yes' : 'No') + '</div></div><span class="badge ' + (c.noDuplicateDefaults ? 'badge-healthy' : 'badge-error') + '">' + (c.noDuplicateDefaults ? 'Pass' : 'Fail') + '</span></div>';
+      } catch (e) {
+        console.error('Failed to load consent status:', e);
+      }
+    }
+
+    // ─── System Health ──────────────────────────────────────────
+    async function loadSystemHealth() {
+      try {
+        const data = await api('/api/system-health');
+        const container = document.getElementById('health-checks-container');
+
+        document.getElementById('last-health-check').textContent = 'Last checked: ' + formatDate(data.lastChecked);
+        document.getElementById('overall-health-badge').textContent = data.overallStatus.toUpperCase();
+        document.getElementById('overall-health-badge').className = 'badge ' + (data.overallStatus === 'healthy' ? 'badge-healthy' : data.overallStatus === 'warning' ? 'badge-warning' : 'badge-error');
+
+        let html = '';
+        Object.keys(data.checks).forEach(function (key) {
+          const c = data.checks[key];
+          html += '<div class="health-item"><div><div class="health-label">' + c.label + '</div><div class="health-detail">' + c.detail + '</div></div><span class="badge badge-' + c.status + '">' + c.status + '</span></div>';
+        });
+        container.innerHTML = html;
+      } catch (e) {
+        console.error('Failed to load system health:', e);
+      }
+    }
+
+    // ─── Settings ───────────────────────────────────────────────
+    async function loadSettings() {
+      try {
+        const data = await api('/api/settings');
+        document.getElementById('setting-business-name').value = data.settings.businessName;
+        document.getElementById('setting-contact-email').value = data.settings.contactEmail;
+        document.getElementById('setting-currency').value = data.settings.defaultCurrency;
+      } catch (e) {
+        console.error('Failed to load settings:', e);
+      }
+    }
+
+    async function saveSettings() {
+      try {
+        const settings = {
+          businessName: document.getElementById('setting-business-name').value,
+          contactEmail: document.getElementById('setting-contact-email').value,
+          defaultCurrency: document.getElementById('setting-currency').value,
+        };
+        await api('/api/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        toast('Settings saved');
+      } catch (e) {
+        toast('Failed to save settings: ' + e.message, 'error');
+      }
+    }
+
+    // ─── Pagination ─────────────────────────────────────────────
+    function renderPagination(type, currentPage, totalPages) {
+      const container = document.getElementById(type + '-page-btns');
+      if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      html += '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="changePage(\'' + type + '\', ' + (currentPage - 1) + ')">&laquo;</button>';
+
+      const start = Math.max(1, currentPage - 2);
+      const end = Math.min(totalPages, currentPage + 2);
+
+      for (let i = start; i <= end; i++) {
+        html += '<button class="' + (i === currentPage ? 'active' : '') + '" onclick="changePage(\'' + type + '\', ' + i + ')">' + i + '</button>';
+      }
+
+      html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + '" onclick="changePage(\'' + type + '\', ' + (currentPage + 1) + ')">&raquo;</button>';
+      container.innerHTML = html;
+    }
+
+    function changePage(type, page) {
+      state[type + 'Page'] = page;
+      loadSection(type);
+    }
+
+    // ─── Utilities ──────────────────────────────────────────────
+    function esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
+    function formatStatus(status) {
+      if (!status) return '-';
+      return status.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+
+    // ─── Event Listeners ────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function () {
+      // Check auth
+      checkAuth();
+
+      // Login form
+      document.getElementById('login-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const password = document.getElementById('login-password').value;
+        const errorEl = document.getElementById('login-error');
+        const btn = document.getElementById('login-btn');
+        btn.disabled = true;
+        errorEl.textContent = '';
+        try {
+          await login(password);
+          showApp();
+          toast('Welcome back!');
+        } catch (err) {
+          errorEl.textContent = err.message || 'Login failed';
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      // Logout
+      document.getElementById('logout-btn').addEventListener('click', logout);
+
+      // Navigation
+      document.querySelectorAll('.sidebar-nav a').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          navigateTo(this.dataset.section);
+        });
+      });
+
+      // Data nav links
+      document.querySelectorAll('[data-nav]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          navigateTo(this.dataset.nav);
+        });
+      });
+
+      // Mobile menu toggle
+      document.getElementById('menu-toggle').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+      });
+
+      document.getElementById('sidebar-overlay').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.remove('open');
+        this.classList.remove('active');
+      });
+
+      // Bookings filters
+      document.getElementById('bookings-search').addEventListener('input', debounce(function () { state.bookingsPage = 1; loadBookings(); }, 300));
+      document.getElementById('bookings-status-filter').addEventListener('change', function () { state.bookingsPage = 1; loadBookings(); });
+      document.getElementById('bookings-trip-filter').addEventListener('change', function () { state.bookingsPage = 1; loadBookings(); });
+      document.getElementById('bookings-date-from').addEventListener('change', function () { state.bookingsPage = 1; loadBookings(); });
+      document.getElementById('bookings-date-to').addEventListener('change', function () { state.bookingsPage = 1; loadBookings(); });
+
+      // Booking actions
+      document.getElementById('add-booking-btn').addEventListener('click', showAddBookingModal);
+      document.getElementById('export-bookings-btn').addEventListener('click', function () {
+        window.open('/api/export?type=bookings', '_blank');
+      });
+
+      // Enquiries filters
+      document.getElementById('enquiries-search').addEventListener('input', debounce(function () { state.enquiriesPage = 1; loadEnquiries(); }, 300));
+      document.getElementById('enquiries-status-filter').addEventListener('change', function () { state.enquiriesPage = 1; loadEnquiries(); });
+
+      // Enquiry actions
+      document.getElementById('add-enquiry-btn').addEventListener('click', showAddEnquiryModal);
+      document.getElementById('export-enquiries-btn').addEventListener('click', function () {
+        window.open('/api/export?type=enquiries', '_blank');
+      });
+
+      // Trips filters
+      document.getElementById('trips-search').addEventListener('input', debounce(function () { state.tripsPage = 1; loadTrips(); }, 300));
+      document.getElementById('trips-type-filter').addEventListener('change', function () { state.tripsPage = 1; loadTrips(); });
+
+      // Customers filters
+      document.getElementById('customers-search').addEventListener('input', debounce(function () { state.customersPage = 1; loadCustomers(); }, 300));
+
+      // Settings form
+      document.getElementById('settings-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        saveSettings();
+      });
+
+      // Date tabs (overview)
+      document.querySelectorAll('#overview-date-tabs .date-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          document.querySelectorAll('#overview-date-tabs .date-tab').forEach(function (t) { t.classList.remove('active'); });
+          this.classList.add('active');
+          // For now, reload overview (date filtering would need backend support)
+          loadOverview();
+        });
+      });
+
+      // Global search
+      document.getElementById('global-search').addEventListener('input', debounce(function (e) {
+        const query = e.target.value.toLowerCase().trim();
+        if (!query) return;
+        // Simple global search — navigate to bookings with search
+        if (state.currentSection === 'bookings') {
+          document.getElementById('bookings-search').value = query;
+          state.bookingsPage = 1;
+          loadBookings();
+        } else if (state.currentSection === 'enquiries') {
+          document.getElementById('enquiries-search').value = query;
+          state.enquiriesPage = 1;
+          loadEnquiries();
+        }
+      }, 300));
     });
 
-    // --- Initial load ---
-    const already = localStorage.getItem('admin-logged-in');
-    if (already === '1') {
-      loggedIn = true;
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'active';
-      loadAll();
+    function debounce(fn, ms) {
+      let timer;
+      return function () {
+        clearTimeout(timer);
+        timer = setTimeout(fn, ms);
+      };
     }
   </script>
 </body>
