@@ -3,14 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Abrid Morocco — Travel planning and booking website with admin dashboard",
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Static site — no build required'",
-    "deploy": "vercel --prod"
-  },
-  "devDependencies": {
-    "vercel": "^37.0.0"
-  },
   "engines": {
     "node": ">=18.0.0"
   }

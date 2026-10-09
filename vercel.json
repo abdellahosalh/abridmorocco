@@ -1,51 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.{js,png,jpg,jpeg,svg,ico,webp,mp4,webm}",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "css/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "images/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "videos/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "fr/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "es/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "data/settings.json",
-      "use": "@vercel/static"
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node@3"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  }
 }
