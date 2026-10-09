@@ -1,9 +1,0 @@
-{
-  "name": "abrid-morocco",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Abrid Morocco — Travel planning and booking website with admin dashboard",
-  "engines": {
-    "node": ">=18.0.0"
-  }
-}
